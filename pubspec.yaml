@@ -35,6 +35,7 @@ dependencies:
   google_sign_in: ^5.2.4
   firebase_core: ^1.12.0
   flutter_native_splash: ^2.0.4
+  new_gradient_app_bar: ^0.2.0
 
 dev_dependencies:
   flutter_test:

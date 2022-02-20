@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, unused_local_variable, prefer_collection_literals
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -58,5 +60,21 @@ class FirebaseMethods {
     await _googleSignIn.disconnect();
     await _googleSignIn.signOut();
     return await _auth.signOut();
+  }
+
+  Future<List<Person>> fetchAllUsers(User currentUser) async {
+    List<Person> userList = [];
+
+    QuerySnapshot querySnapshot =
+        await firestore.collection('persons').get();
+
+    for (var i = 0; i < querySnapshot.docs.length; i++) {
+      if (querySnapshot.docs[i].id != currentUser.uid) {
+        userList.add(
+          Person.fromMap(querySnapshot.docs[i].data() as Map<String, dynamic>),
+        );
+      }
+    }
+    return userList;
   }
 }

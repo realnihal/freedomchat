@@ -17,7 +17,7 @@ final FirebaseRepository _repository = FirebaseRepository();
 
 class _ChatListScreenState extends State<ChatListScreen> {
   late String currentUserId;
-  String initials = "FC";
+  late String initials;
 
   @override
   void initState() {
@@ -47,7 +47,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
             Icons.search,
             color: Colors.purple[50],
           ),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, "/search_screen");
+          },
         ),
         IconButton(
           icon: Icon(
@@ -112,8 +114,8 @@ class _ChatListContainerState extends State<ChatListContainer> {
                   Align(
                     alignment: Alignment.bottomRight,
                     child: Container(
-                      height: 12,
-                      width: 12,
+                      height: 10,
+                      width: 10,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.green,
