@@ -13,6 +13,7 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen> {
   FirebaseRepository _repository = FirebaseRepository();
+  bool isLoginPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,53 +28,59 @@ class LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Column(
-                children: [
-                  Text(
-                    "Welcome",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
+              isLoginPressed
+                  ? Center(
+                      child: CircularProgressIndicator(
+                      backgroundColor: Colors.purple,
+                    ))
+                  : Column(
+                      children: [
+                        Text(
+                          "Welcome",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 30,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Text(
+                          "Freedom to communicate faster, better and safer",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                            fontSize: 15,
+                          ),
+                        )
+                      ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Text(
-                    "Freedom to communicate faster, better and safer",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontSize: 15,
-                    ),
-                  )
-                ],
-              ),
               Container(
-                height: MediaQuery.of(context).size.height/2,
+                height: MediaQuery.of(context).size.height / 2,
                 decoration: BoxDecoration(
-                  image: DecorationImage(image: AssetImage('assets/Illustration.png'))
-                ),
+                    image: DecorationImage(
+                        image: AssetImage('assets/Illustration.png'))),
               ),
               Container(
-                child: MaterialButton(
-                  color: Colors.white,
-                  minWidth: double.infinity,
-                  height: 60,
-                  onPressed: () => performLogin(),
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(
-                      width: 0.5,
-                      color: Colors.black
+                child: Stack(children: [
+                  MaterialButton(
+                    color: Colors.white,
+                    minWidth: double.infinity,
+                    height: 60,
+                    onPressed: () => performLogin(),
+                    shape: RoundedRectangleBorder(
+                        side: BorderSide(width: 0.5, color: Colors.black),
+                        borderRadius: BorderRadius.circular(50)),
+                    child: Text(
+                      "Login with Google",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(50)
                   ),
-                  child: Text("Login with Google",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),),
-              ),)
+                ]),
+              )
             ],
           ),
         ),
@@ -81,14 +88,20 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
   void performLogin() async {
     UserCredential userCredential = await _repository.signIn();
     authenticateUser(userCredential);
+
+    setState(() {
+      isLoginPressed = true;
+    });
   }
 
   void authenticateUser(UserCredential userCredential) {
     _repository.authenticateUser(userCredential).then((isNewUser) {
+      setState(() {
+        isLoginPressed = false;
+      });
       if (isNewUser) {
         _repository.addDataToDb(userCredential).then((value) {
           Navigator.pushReplacement(context,

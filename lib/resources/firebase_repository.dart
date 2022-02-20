@@ -12,4 +12,5 @@ class FirebaseRepository {
       _firebaseMethods.authenticateUser(userCredential);
 
   Future<void> addDataToDb(UserCredential userCredential) => _firebaseMethods.addDataToDb(userCredential);
+  Future<void> signOut() => _firebaseMethods.signOut();
 }

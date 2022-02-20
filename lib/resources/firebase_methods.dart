@@ -43,15 +43,20 @@ class FirebaseMethods {
 
   Future<void> addDataToDb(UserCredential userCredential) async {
     String username = Utils.getUsername(userCredential.user?.email ?? "");
-
     firestore.collection('persons').doc(userCredential.user?.uid).set(
           {
         'uid': userCredential.user?.uid,
         'email': userCredential.user?.email,
         'name': userCredential.user?.displayName,
         'profilePhoto': userCredential.user?.photoURL,
-        username: username
+        'username': username
           },
         );
+  }
+
+  Future<void> signOut() async {
+    await _googleSignIn.disconnect();
+    await _googleSignIn.signOut();
+    return await _auth.signOut();
   }
 }
