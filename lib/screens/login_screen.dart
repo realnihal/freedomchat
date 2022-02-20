@@ -17,6 +17,7 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.purple.shade50,
       body: SafeArea(
         child: Container(
           width: double.infinity,
@@ -36,10 +37,10 @@ class LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 30,
                   ),
                   Text(
-                    "Freedom to communicate faster, better with safer",
+                    "Freedom to communicate faster, better and safer",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.grey[700],
@@ -56,11 +57,13 @@ class LoginScreenState extends State<LoginScreen> {
               ),
               Container(
                 child: MaterialButton(
+                  color: Colors.white,
                   minWidth: double.infinity,
                   height: 60,
                   onPressed: () => performLogin(),
                   shape: RoundedRectangleBorder(
                     side: BorderSide(
+                      width: 0.5,
                       color: Colors.black
                     ),
                     borderRadius: BorderRadius.circular(50)
