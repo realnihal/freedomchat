@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:freedomchat/screens/pageviews/chatlist_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -15,6 +16,9 @@ class _HomeScreenState extends State<HomeScreen> {
       _page = page;
     });
   }
+  void navigationTapped(int page) {
+    pageController.jumpToPage(page);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +26,8 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.purple.shade50,
       body: PageView(
         children: [
-          Center(child: Text("Chat List Screen")),
-          Center(child: Text("Call losg")),
+          Container(child:ChatListScreen()),
+          Center(child: Text("Call logs")),
           Center(child: Text("Contact Screen")),
         ],
         controller: pageController,
@@ -36,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: Colors.purple.shade50,
             items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.chat,
+                icon: Icon(Icons.chat_outlined,
                     color: (_page == 0)
                         ? Colors.purple.shade300
                         : Colors.purple.shade200),
@@ -48,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
               ),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.call,
+                  icon: Icon(Icons.call_outlined,
                       color: (_page == 1)
                           ? Colors.purple.shade300
                           : Colors.purple.shade200),
@@ -60,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.contact_phone,
+                icon: Icon(Icons.contact_phone_outlined,
                     color: (_page == 2)
                         ? Colors.purple.shade300
                         : Colors.purple.shade200),
@@ -72,6 +76,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
               ),
             ],
+            onTap: navigationTapped,
+            currentIndex: _page,
           ),
         ),
       ),
