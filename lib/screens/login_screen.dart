@@ -49,7 +49,7 @@ class LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               Container(
-                height: MediaQuery.of(context).size.height/3,
+                height: MediaQuery.of(context).size.height/2,
                 decoration: BoxDecoration(
                   image: DecorationImage(image: AssetImage('assets/Illustration.png'))
                 ),
@@ -78,7 +78,7 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  
+
   void performLogin() async {
     UserCredential userCredential = await _repository.signIn();
     authenticateUser(userCredential);
