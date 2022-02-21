@@ -18,16 +18,22 @@ final FirebaseRepository _repository = FirebaseRepository();
 class _ChatListScreenState extends State<ChatListScreen> {
   late String currentUserId;
   late String initials;
+  bool loadState = true;
 
-  @override
-  void initState() {
-    super.initState();
+  void loadData(){
     _repository.getCurrentUser().then((user) {
       setState(() {
         currentUserId = user.uid;
         initials = Utils.getInitials(user.displayName!);
+        loadState = false;
       });
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
   }
 
   CustomAppBar customAppBar(BuildContext context) {
@@ -40,7 +46,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
         onPressed: () {},
       ),
       centerTitle: true,
-      title: UserCircle(initials),
+      title: loadState ? UserCircle("TS") 
+      : UserCircle(initials),
       actions: [
         IconButton(
           icon: Icon(
@@ -68,7 +75,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
       backgroundColor: Colors.purple.shade50,
       appBar: customAppBar(context),
       floatingActionButton: NewChatButton(),
-      body: ChatListContainer(currentUserId),
+      body: loadState ? Center(child:CircularProgressIndicator(color: Colors.purple,))
+      : ChatListContainer(currentUserId),
     );
   }
 }
