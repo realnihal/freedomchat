@@ -74,6 +74,7 @@ class _ChatScreenState extends State<ChatScreen> {
           return Center(child: CircularProgressIndicator());
         }
         return ListView.builder(
+          reverse: true,
           padding: EdgeInsets.all(10),
           itemCount: snapshot.data?.docs.length,
           itemBuilder: (context, index) {
@@ -242,6 +243,7 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         isWriting = false;
       });
+      textFieldController.text = "";
 
       _repository.addMessageToDb(_message, sender, widget.receiver);
     }
