@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_is_empty, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, prefer_final_fields
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:freedomchat/models/message.dart';
 import 'package:freedomchat/widgets/appbar.dart';
 import 'package:freedomchat/widgets/custom_tile.dart';
@@ -20,13 +22,15 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController textFieldController = TextEditingController();
   FirebaseRepository _repository = FirebaseRepository();
-  bool loadState = true;
+  ScrollController _listScrollController = ScrollController();
   late Person sender;
   late String _currentUserId;
-
+  FocusNode _textFieldFocus = FocusNode();
+  bool loadState = true;
   bool isWriting = false;
+  bool showEmojiPicker = false;
 
-  void loadData()async{
+  void loadData() async {
     await _repository.getCurrentUser().then((user) {
       _currentUserId = user.uid;
 
@@ -42,7 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   @override
-  void initState() {  
+  void initState() {
     super.initState();
     loadData();
   }
@@ -52,16 +56,62 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       backgroundColor: Colors.purple[50],
       appBar: customAppBar(context),
-      body: loadState ? Center(child: CircularProgressIndicator(color: Colors.purple,),)
-      : Column(
-        children: <Widget>[
-          Flexible(
-            child: messageList(),
-          ),
-          chatControls(),
-        ],
+      body: loadState
+          ? Center(
+              child: CircularProgressIndicator(
+                color: Colors.purple,
+              ),
+            )
+          : Column(
+              children: <Widget>[
+                Flexible(
+                  child: messageList(),
+                ),
+                chatControls(),
+                showEmojiPicker
+                    ? Container(
+                      height: 300,
+                        child: emojiContainer(),
+                      )
+                    : Container()
+              ],
+            ),
+    );
+  }
+  bool emojiShowing = false;
+
+  emojiContainer() {
+    return EmojiPicker(
+      onEmojiSelected: (Category category, Emoji emoji) {
+        setState(() {
+          isWriting = true;
+        });
+        textFieldController.text += emoji.emoji;
+      },
+      config: const Config(
+        columns: 7,
+        bgColor: Colors.purple,
+        iconColorSelected: Colors.white,
+        iconColor: Colors.black,
+        indicatorColor: Colors.purpleAccent,
       ),
     );
+  }
+
+  showKeyboard() => _textFieldFocus.requestFocus();
+
+  hideKeyboard() => _textFieldFocus.unfocus();
+
+  hideEmojiContainer() {
+    setState(() {
+      showEmojiPicker = false;
+    });
+  }
+
+  showEmojiContainer() {
+    setState(() {
+      showEmojiPicker = true;
+    });
   }
 
   Widget messageList() {
@@ -76,9 +126,19 @@ class _ChatScreenState extends State<ChatScreen> {
         if (snapshot.data == null) {
           return Center(child: CircularProgressIndicator());
         }
+
+        SchedulerBinding.instance!.addPostFrameCallback((_) {
+          _listScrollController.animateTo(
+            _listScrollController.position.minScrollExtent,
+            duration: Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+          );
+        });
+
         return ListView.builder(
           reverse: true,
           padding: EdgeInsets.all(10),
+          controller: _listScrollController,
           itemCount: snapshot.data?.docs.length,
           itemBuilder: (context, index) {
             return chatMessageItem(snapshot.data!.docs[index]);
@@ -263,60 +323,97 @@ class _ChatScreenState extends State<ChatScreen> {
                 gradient: LinearGradient(colors: [Colors.purple, Colors.black]),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.add,color: Colors.white,),
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
             ),
           ),
           SizedBox(
             width: 5,
           ),
           Expanded(
-            child: TextField(
-              controller: textFieldController,
-              style: TextStyle(
-                color: Colors.white,
-              ),
-              onChanged: (val) {
-                (val.length > 0 && val.trim() != "")
-                    ? setWritingTo(true)
-                    : setWritingTo(false);
-              },
-              decoration: InputDecoration(
-                hintText: "Type a message",
-                hintStyle: TextStyle(
-                  color: Colors.white,
-                ),
-                border: OutlineInputBorder(
-                    borderRadius: const BorderRadius.all(
-                      const Radius.circular(50.0),
+            child: Stack(
+              children: [
+                TextField(
+                  controller: textFieldController,
+                  focusNode: _textFieldFocus,
+                  onTap: () {
+                    hideEmojiContainer();
+                  },
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                  onChanged: (val) {
+                    (val.length > 0 && val.trim() != "")
+                        ? setWritingTo(true)
+                        : setWritingTo(false);
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Type a message",
+                    hintStyle: TextStyle(
+                      color: Colors.white,
                     ),
-                    borderSide: BorderSide.none),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                filled: true,
-                fillColor: Colors.purple[300],
-                suffixIcon: GestureDetector(
-                  onTap: () {},
-                  child: Icon(Icons.face,color: Colors.purple[100],),
+                    border: OutlineInputBorder(
+                        borderRadius: const BorderRadius.all(
+                          const Radius.circular(50.0),
+                        ),
+                        borderSide: BorderSide.none),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    filled: true,
+                    fillColor: Colors.purple[300],
+                  ),
                 ),
-              ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    highlightColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    onPressed: () {
+                      if (!showEmojiPicker) {
+                        showEmojiContainer();
+                        hideKeyboard();
+                      } else {
+                        hideEmojiContainer();
+                        showKeyboard();
+                      }
+                    },
+                    icon: Icon(
+                      Icons.face,
+                      color: Colors.purple[100],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           isWriting
               ? Container()
               : Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Icon(Icons.record_voice_over,color: Colors.purple[900],),
+                  child: Icon(
+                    Icons.mic_outlined,
+                    color: Colors.purple[900],
+                  ),
                 ),
-          isWriting ? Container() : Icon(Icons.camera_alt,color: Colors.purple[900],),
+          isWriting
+              ? Container()
+              : Icon(
+                  Icons.camera_alt,
+                  color: Colors.purple[900],
+                ),
           isWriting
               ? Container(
                   margin: EdgeInsets.only(left: 10),
                   decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [Colors.purple, Colors.black]),
+                      gradient:
+                          LinearGradient(colors: [Colors.purple, Colors.black]),
                       shape: BoxShape.circle),
                   child: IconButton(
                     icon: Icon(
-                      Icons.send,color: Colors.white,
+                      Icons.send,
+                      color: Colors.white,
                       size: 15,
                     ),
                     onPressed: () => sendMessage(),
@@ -338,13 +435,14 @@ class _ChatScreenState extends State<ChatScreen> {
         },
       ),
       centerTitle: false,
-      title: loadState ? Text("Loading")
-      : Text(
-        widget.receiver.name!,
-        style: TextStyle(
-          fontSize:20,
-        ),
-      ),
+      title: loadState
+          ? Text("Loading")
+          : Text(
+              widget.receiver.name!,
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            ),
       actions: <Widget>[
         IconButton(
           icon: Icon(
@@ -407,7 +505,8 @@ class ModalTile extends StatelessWidget {
             color: Colors.white,
             fontSize: 18,
           ),
-        ), onTap: () {  },
+        ),
+        onTap: () {},
       ),
     );
   }
