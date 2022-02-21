@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'user_details_container.dart';
+import 'sign_out_container.dart';
 
 
 class UserCircle extends StatelessWidget {
