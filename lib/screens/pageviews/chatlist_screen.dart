@@ -5,6 +5,7 @@ import 'package:freedomchat/resources/firebase_repository.dart';
 import 'package:freedomchat/widgets/appbar.dart';
 import 'package:freedomchat/utils/utilities.dart';
 import 'package:freedomchat/widgets/custom_tile.dart';
+import 'package:freedomchat/widgets/user_circle.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({Key? key}) : super(key: key);
@@ -144,52 +145,7 @@ class _ChatListContainerState extends State<ChatListContainer> {
   }
 }
 
-class UserCircle extends StatelessWidget {
-  final String text;
 
-  UserCircle(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 40,
-      width: 40,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(50),
-        color: Colors.purple.shade900,
-      ),
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: Text(
-              text,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 13,
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Container(
-              height: 12,
-              width: 12,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 2,
-                  ),
-                  color: Colors.green),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
 
 class NewChatButton extends StatelessWidget {
   const NewChatButton({Key? key}) : super(key: key);

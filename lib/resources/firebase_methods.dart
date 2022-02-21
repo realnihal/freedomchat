@@ -55,10 +55,16 @@ class FirebaseMethods {
         );
   }
 
-  Future<void> signOut() async {
+  Future<bool> signOut() async {
+    try{
     await _googleSignIn.disconnect();
     await _googleSignIn.signOut();
-    return await _auth.signOut();
+    await _auth.signOut();
+    return true;
+    }catch(e){
+      return false;
+    }
+   
   }
 
   Future<List<Person>> fetchAllUsers(User currentUser) async {
