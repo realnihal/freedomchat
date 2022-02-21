@@ -104,16 +104,10 @@ class LoginScreenState extends State<LoginScreen> {
       });
       if (isNewUser) {
         _repository.addDataToDb(userCredential).then((value) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) {
-            return HomeScreen();
-          }));
+          Navigator.pushNamed(context, '/second');
         });
       } else {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) {
-          return HomeScreen();
-        }));
+        Navigator.pushNamed(context, '/second');
       }
     });
   }

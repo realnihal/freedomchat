@@ -5,6 +5,7 @@ import 'package:freedomchat/resources/firebase_repository.dart';
 import 'package:freedomchat/screens/home_screen.dart';
 import 'package:freedomchat/screens/login_screen.dart';
 import 'package:freedomchat/screens/search_screen.dart';
+import 'package:page_transition/page_transition.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +36,17 @@ class _MyAppState extends State<MyApp> {
       initialRoute: "/",
       routes: {
         "/search_screen": (context) => SearchScreen(),
+      },
+      onGenerateRoute: (settings){
+        switch (settings.name){
+          case '/second':
+            return PageTransition(child: HomeScreen(), type: PageTransitionType.fade);
+          case '/third':
+            return PageTransition(child: SearchScreen(), type: PageTransitionType.topToBottom);
+          default:
+          return null;
+        }
+        
       },
       home: FutureBuilder(
         future: _repository.getCurrentUser(),

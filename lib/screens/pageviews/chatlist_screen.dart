@@ -56,7 +56,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             color: Colors.purple[50],
           ),
           onPressed: () {
-            Navigator.pushNamed(context, "/search_screen");
+            Navigator.pushNamed(context, '/third');
           },
         ),
         IconButton(

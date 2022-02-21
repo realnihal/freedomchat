@@ -37,6 +37,7 @@ dependencies:
   flutter_native_splash: ^2.0.4
   new_gradient_app_bar: ^0.2.0
   emoji_picker_flutter: ^1.1.2
+  page_transition: ^2.0.5
 
 dev_dependencies:
   flutter_test:

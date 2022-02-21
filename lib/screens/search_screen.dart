@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freedomchat/screens/chatscreens/chat_screen.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
+import 'package:page_transition/page_transition.dart';
 import '../../models/person.dart';
 import '../../resources/firebase_methods.dart';
 import '../../widgets/custom_tile.dart';
@@ -109,7 +110,10 @@ class _SearchScreenState extends State<SearchScreen> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ChatScreen(
+              PageTransition(
+                ctx: (context),
+                type: PageTransitionType.rightToLeft,
+                 child: ChatScreen(
                 receiver:searchedUser,
               ))
             );

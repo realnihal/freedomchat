@@ -6,6 +6,7 @@ import 'package:freedomchat/models/person.dart';
 import 'package:freedomchat/resources/firebase_repository.dart';
 import 'package:freedomchat/screens/login_screen.dart';
 import 'package:freedomchat/utils/utilities.dart';
+import 'package:page_transition/page_transition.dart';
 
 import 'custom_tile.dart';
 
@@ -42,7 +43,10 @@ class _UserDetailsContainerState extends State<UserDetailsContainer> {
       if (isLoggedOut) {
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => LoginScreen()),
+            PageTransition(
+                ctx: (context),
+                child: LoginScreen(),
+                type: PageTransitionType.fade),
             (Route<dynamic> route) => false);
       }
     }
@@ -139,7 +143,7 @@ class _UserDetailsContainerState extends State<UserDetailsContainer> {
                         Container(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Text(
-                            "UID: "+currentUser.uid,
+                            "UID: " + currentUser.uid,
                             style: TextStyle(
                                 color: Colors.purple[300],
                                 fontSize: 10,
