@@ -46,7 +46,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         onPressed: () {},
       ),
       centerTitle: true,
-      title: loadState ? UserCircle("TS") 
+      title: loadState ? Center(child:CircularProgressIndicator(color: Colors.purple,)) 
       : UserCircle(initials),
       actions: [
         IconButton(

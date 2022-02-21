@@ -20,18 +20,14 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController textFieldController = TextEditingController();
   FirebaseRepository _repository = FirebaseRepository();
-
+  bool loadState = true;
   late Person sender;
-
   late String _currentUserId;
 
   bool isWriting = false;
 
-  @override
-  void initState() {  
-    super.initState();
-
-    _repository.getCurrentUser().then((user) {
+  void loadData()async{
+    await _repository.getCurrentUser().then((user) {
       _currentUserId = user.uid;
 
       setState(() {
@@ -40,8 +36,15 @@ class _ChatScreenState extends State<ChatScreen> {
           name: user.displayName,
           profilePhoto: user.photoURL,
         );
+        loadState = false;
       });
     });
+  }
+
+  @override
+  void initState() {  
+    super.initState();
+    loadData();
   }
 
   @override
@@ -49,7 +52,8 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       backgroundColor: Colors.purple[50],
       appBar: customAppBar(context),
-      body: Column(
+      body: loadState ? Center(child: CircularProgressIndicator(color: Colors.purple,),)
+      : Column(
         children: <Widget>[
           Flexible(
             child: messageList(),
@@ -334,7 +338,8 @@ class _ChatScreenState extends State<ChatScreen> {
         },
       ),
       centerTitle: false,
-      title: Text(
+      title: loadState ? Text("Loading")
+      : Text(
         widget.receiver.name!,
         style: TextStyle(
           fontSize:20,
