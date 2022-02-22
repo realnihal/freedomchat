@@ -1,5 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:freedomchat/enum/user_state.dart';
+import 'package:freedomchat/resources/firebase_methods.dart';
+import 'package:freedomchat/resources/firebase_repository.dart';
 import 'package:freedomchat/screens/pageviews/chatlist_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -7,9 +11,61 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver{
   PageController pageController = PageController();
   int _page = 0;
+  final FirebaseRepository _repository = FirebaseRepository();
+  final FirebaseMethods _methods = FirebaseMethods();
+  late String currentUserId;
+
+  gettingCurrentUser()async{
+    User currentUser = await _repository.getCurrentUser();
+    currentUserId = currentUser.uid;
+    _methods.setUserState(userId: currentUserId, userState: UserState.Online);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    gettingCurrentUser();
+    WidgetsBinding.instance?.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance!.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state){
+    super.didChangeAppLifecycleState(state);
+    switch(state){
+      case AppLifecycleState.resumed:
+      currentUserId != null ? _methods.setUserState(
+        userId: currentUserId, userState: UserState.Online
+        ) : print("resumed state");
+      break;
+      
+      case AppLifecycleState.inactive:
+      currentUserId != null ? _methods.setUserState(
+        userId: currentUserId, userState: UserState.Offline
+        ) : print("inactive state");
+      break;
+
+      case AppLifecycleState.paused:
+      currentUserId != null ? _methods.setUserState(
+        userId: currentUserId, userState: UserState.Waiting
+        ) : print("paused state");
+      break;
+
+      case AppLifecycleState.detached:
+        currentUserId != null ? _methods.setUserState(
+        userId: currentUserId, userState: UserState.Offline
+        ) : print("paused state");
+        break;
+    }
+  }
 
   void onPageChanged(int page) {
     setState(() {

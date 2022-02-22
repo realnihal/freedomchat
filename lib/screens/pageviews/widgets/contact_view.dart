@@ -8,6 +8,7 @@ import 'package:freedomchat/resources/firebase_methods.dart';
 import 'package:freedomchat/screens/chatscreens/chat_screen.dart';
 import 'package:freedomchat/screens/chatscreens/widget/cached_image.dart';
 import 'package:freedomchat/screens/pageviews/widgets/last_message_container.dart';
+import 'package:freedomchat/screens/pageviews/widgets/online_dot_indicator.dart';
 import 'package:freedomchat/widgets/custom_tile.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -74,21 +75,7 @@ class ViewLayout extends StatelessWidget {
               radius: 80,
               isRound: true,
             ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Container(
-                height: 10,
-                width: 10,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.green,
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 1,
-                  ),
-                ),
-              ),
-            )
+            OnlineDotIndicator(uid: contact.uid!)
           ],
         ),
       ),

@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:freedomchat/enum/user_state.dart';
 import 'package:freedomchat/models/contact.dart';
 import 'package:freedomchat/models/message.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -185,4 +186,17 @@ class FirebaseMethods {
           .collection(receiverId)
           .orderBy("timestamp")
           .snapshots();
+
+
+void setUserState({required String userId, required UserState userState}) {
+    int stateNum = Utils.stateToNum(userState);
+
+    firestore.collection('persons').doc(userId).update({
+      "state": stateNum,
+    });
+  }
+
+  Stream<DocumentSnapshot> getUserStream({required String uid}) =>
+    firestore.collection('persons').doc(uid).snapshots();
+  
 }
