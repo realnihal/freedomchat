@@ -11,14 +11,14 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver{
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   PageController pageController = PageController();
   int _page = 0;
   final FirebaseRepository _repository = FirebaseRepository();
   final FirebaseMethods _methods = FirebaseMethods();
   late String currentUserId;
 
-  gettingCurrentUser()async{
+  gettingCurrentUser() async {
     User currentUser = await _repository.getCurrentUser();
     currentUserId = currentUser.uid;
     _methods.setUserState(userId: currentUserId, userState: UserState.Online);
@@ -38,31 +38,35 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver{
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state){
+  void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    switch(state){
+    switch (state) {
       case AppLifecycleState.resumed:
-      currentUserId != null ? _methods.setUserState(
-        userId: currentUserId, userState: UserState.Online
-        ) : print("resumed state");
-      break;
-      
+        currentUserId != null
+            ? _methods.setUserState(
+                userId: currentUserId, userState: UserState.Online)
+            : print("resumed state");
+        break;
+
       case AppLifecycleState.inactive:
-      currentUserId != null ? _methods.setUserState(
-        userId: currentUserId, userState: UserState.Offline
-        ) : print("inactive state");
-      break;
+        currentUserId != null
+            ? _methods.setUserState(
+                userId: currentUserId, userState: UserState.Offline)
+            : print("inactive state");
+        break;
 
       case AppLifecycleState.paused:
-      currentUserId != null ? _methods.setUserState(
-        userId: currentUserId, userState: UserState.Waiting
-        ) : print("paused state");
-      break;
+        currentUserId != null
+            ? _methods.setUserState(
+                userId: currentUserId, userState: UserState.Waiting)
+            : print("paused state");
+        break;
 
       case AppLifecycleState.detached:
-        currentUserId != null ? _methods.setUserState(
-        userId: currentUserId, userState: UserState.Offline
-        ) : print("paused state");
+        currentUserId != null
+            ? _methods.setUserState(
+                userId: currentUserId, userState: UserState.Offline)
+            : print("paused state");
         break;
     }
   }
@@ -72,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver{
       _page = page;
     });
   }
+
   void navigationTapped(int page) {
     pageController.jumpToPage(page);
   }
@@ -82,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver{
       backgroundColor: Colors.purple.shade50,
       body: PageView(
         children: [
-          Container(child:ChatListScreen()),
+          Container(child: ChatListScreen()),
           Center(child: Text("Call logs")),
           Center(child: Text("Contact Screen")),
         ],
@@ -93,43 +98,62 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver{
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 10),
           child: CupertinoTabBar(
-            backgroundColor: Colors.purple.shade50,
+            border: Border(
+              top: BorderSide(
+                color: Colors.black,
+                width: 0.5,
+              ),
+              bottom: BorderSide(
+                color: Colors.black,
+                width: 0.5,
+              ),
+            ),
+            backgroundColor: Colors.purple.shade100,
             items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.chat_outlined,
-                    color: (_page == 0)
-                        ? Colors.purple.shade300
-                        : Colors.purple.shade200),
-                title: Text(
-                    "Chat",
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: (_page == 0) ? Colors.black : Colors.grey),
-                  ),
-              ),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.call_outlined,
-                      color: (_page == 1)
+                icon: Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: Icon(Icons.chat,
+                      color: (_page == 0)
                           ? Colors.purple.shade300
                           : Colors.purple.shade200),
-                  title: Text(
-                    "Call",
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: (_page == 1) ? Colors.black : Colors.grey),
-                  ),
-                  ),
+                ),
+                title: Text(
+                  "Chat",
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: (_page == 0)
+                          ? Colors.purple[900]
+                          : Colors.purple[400]),
+                ),
+              ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.contact_phone_outlined,
+                icon: Icon(Icons.call,
+                    color: (_page == 1)
+                        ? Colors.purple.shade400
+                        : Colors.purple.shade200),
+                title: Text(
+                  "Call",
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: (_page == 1)
+                          ? Colors.purple[900]
+                          : Colors.purple[400]),
+                ),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.contact_phone,
                     color: (_page == 2)
                         ? Colors.purple.shade300
                         : Colors.purple.shade200),
                 title: Text(
-                    "Contact List",
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: (_page == 2) ? Colors.black : Colors.grey),
-                  ),
+                  "Contact List",
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: (_page == 2)
+                          ? Colors.purple[900]
+                          : Colors.purple[400]),
+                ),
               ),
             ],
             onTap: navigationTapped,

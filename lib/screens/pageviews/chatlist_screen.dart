@@ -141,7 +141,9 @@ class NewChatButton extends StatelessWidget {
       child: Icon(Icons.edit_outlined),
       backgroundColor: Colors.purple[300],
       elevation: 5,
-      onPressed: () {},
+      onPressed: () {
+        Navigator.pushNamed(context, '/third');
+      },
     );
   }
 }

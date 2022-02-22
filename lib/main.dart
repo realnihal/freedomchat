@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
           case '/second':
             return PageTransition(child: HomeScreen(), type: PageTransitionType.fade);
           case '/third':
-            return PageTransition(child: SearchScreen(), type: PageTransitionType.topToBottom);
+            return PageTransition(child: SearchScreen(), type: PageTransitionType.fade);
           default:
           return null;
         }

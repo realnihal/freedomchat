@@ -590,14 +590,16 @@ class _ChatScreenState extends State<ChatScreen> {
                           Container(
                             width: 10,
                           ),
-              Text(
-                  widget.receiver.name!,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 20,
+              Flexible(
+                child: Text(
+                    widget.receiver.name!,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 17,
+                    ),
                   ),
-                ),
+              ),
             ],
           ),
       actions: <Widget>[
