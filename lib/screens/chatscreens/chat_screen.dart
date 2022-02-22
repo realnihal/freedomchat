@@ -9,6 +9,8 @@ import 'package:freedomchat/widgets/appbar.dart';
 import 'package:freedomchat/widgets/custom_tile.dart';
 import 'package:freedomchat/models/person.dart';
 import 'package:freedomchat/resources/firebase_repository.dart';
+import 'package:freedomchat/widgets/user_circle.dart';
+import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
   final Person receiver;
@@ -70,7 +72,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 chatControls(),
                 showEmojiPicker
                     ? Container(
-                      height: 300,
+                        height: 300,
                         child: emojiContainer(),
                       )
                     : Container()
@@ -78,6 +80,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
     );
   }
+
   bool emojiShowing = false;
 
   emojiContainer() {
@@ -150,7 +153,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget chatMessageItem(DocumentSnapshot snapshot) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 15),
+      margin: EdgeInsets.symmetric(vertical: 5),
       child: Container(
         alignment: snapshot['senderId'] == _currentUserId
             ? Alignment.centerRight
@@ -162,25 +165,127 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  String getdate(DateTime tm) {
+    DateTime today = new DateTime.now();
+    Duration oneDay = new Duration(days: 1);
+    Duration twoDay = new Duration(days: 2);
+    Duration oneWeek = new Duration(days: 7);
+    String? month;
+    switch (tm.month) {
+      case 1:
+        month = "january";
+        break;
+      case 2:
+        month = "february";
+        break;
+      case 3:
+        month = "march";
+        break;
+      case 4:
+        month = "april";
+        break;
+      case 5:
+        month = "may";
+        break;
+      case 6:
+        month = "june";
+        break;
+      case 7:
+        month = "july";
+        break;
+      case 8:
+        month = "august";
+        break;
+      case 9:
+        month = "september";
+        break;
+      case 10:
+        month = "october";
+        break;
+      case 11:
+        month = "november";
+        break;
+      case 12:
+        month = "december";
+        break;
+    }
+
+    Duration difference = today.difference(tm);
+
+    if (difference.compareTo(oneDay) < 1) {
+      return "today";
+    } else if (difference.compareTo(twoDay) < 1) {
+      return "yesterday";
+    } else if (difference.compareTo(oneWeek) < 1) {
+      switch (tm.weekday) {
+        case 1:
+          return "monday";
+        case 2:
+          return "tuesday";
+        case 3:
+          return "wednesday";
+        case 4:
+          return "thursday";
+        case 5:
+          return "friday";
+        case 6:
+          return "saturday";
+        case 7:
+          return "sunday";
+      }
+    } else if (tm.year == today.year) {
+      return '${tm.day} $month';
+    } else {
+      return '${tm.day} $month ${tm.year}';
+    }
+    return '';
+  }
+
   Widget senderLayout(DocumentSnapshot snapshot) {
     Radius messageRadius = Radius.circular(10);
+    DateTime date = (snapshot['timestamp'] as Timestamp).toDate();
+    String d24 = DateFormat('HH:mm').format(date);
 
-    return Container(
-      margin: EdgeInsets.only(top: 12),
-      constraints:
-          BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.65),
-      decoration: BoxDecoration(
-        color: Colors.purple[200],
-        borderRadius: BorderRadius.only(
-          topLeft: messageRadius,
-          bottomRight: messageRadius,
-          bottomLeft: messageRadius,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Container(
+          margin: EdgeInsets.only(top: 5),
+          child: Text(
+            getdate(date),
+            style: TextStyle(
+              color: Colors.purple[300],
+              fontSize: 10,
+            ),
+          ),
         ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(10),
-        child: getMessage(snapshot),
-      ),
+        Container(
+          margin: EdgeInsets.only(top: 0),
+          constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.65),
+          decoration: BoxDecoration(
+            color: Colors.purple[200],
+            borderRadius: BorderRadius.only(
+              topLeft: messageRadius,
+              bottomRight: messageRadius,
+              bottomLeft: messageRadius,
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: getMessage(snapshot),
+          ),
+        ),
+        Container(
+          child: Text(
+            d24,
+            style: TextStyle(
+              color: Colors.purple[300],
+              fontSize: 12,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -196,23 +301,49 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget receiverLayout(DocumentSnapshot snapshot) {
     Radius messageRadius = Radius.circular(10);
+    DateTime date = (snapshot['timestamp'] as Timestamp).toDate();
+    String d24 = DateFormat('HH:mm').format(date);
 
-    return Container(
-      margin: EdgeInsets.only(top: 12),
-      constraints:
-          BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.65),
-      decoration: BoxDecoration(
-        color: Colors.purple[700],
-        borderRadius: BorderRadius.only(
-          bottomRight: messageRadius,
-          topRight: messageRadius,
-          bottomLeft: messageRadius,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: EdgeInsets.only(top: 5),
+          child: Text(
+            getdate(date),
+            style: TextStyle(
+              color: Colors.purple[800],
+              fontSize: 10,
+            ),
+          ),
         ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(10),
-        child: getMessage(snapshot),
-      ),
+        Container(
+          margin: EdgeInsets.only(top: 0),
+          constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.65),
+          decoration: BoxDecoration(
+            color: Colors.purple[600],
+            borderRadius: BorderRadius.only(
+              topLeft: messageRadius,
+              bottomRight: messageRadius,
+              bottomLeft: messageRadius,
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: getMessage(snapshot),
+          ),
+        ),
+        Container(
+          child: Text(
+            d24,
+            style: TextStyle(
+              color: Colors.purple[800],
+              fontSize: 12,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -225,9 +356,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
     addMediaModal(context) {
       showModalBottomSheet(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
           context: context,
           elevation: 0,
-          backgroundColor: Colors.purple[700],
+          backgroundColor: Colors.purple[400],
           builder: (context) {
             return Column(
               children: <Widget>[
@@ -238,6 +372,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       FlatButton(
                         child: Icon(
                           Icons.close,
+                          color: Colors.purple[1900],
                         ),
                         onPressed: () => Navigator.maybePop(context),
                       ),
@@ -255,6 +390,11 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     ],
                   ),
+                ),
+                Container(
+                  height: 2,
+                  color: Colors.black,
+                  width: MediaQuery.of(context).size.width - 30,
                 ),
                 Flexible(
                   child: ListView(
@@ -381,7 +521,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                     icon: Icon(
                       Icons.face,
-                      color: Colors.purple[100],
+                      color: Colors.purple[900],
                     ),
                   ),
                 ),
@@ -437,12 +577,29 @@ class _ChatScreenState extends State<ChatScreen> {
       centerTitle: false,
       title: loadState
           ? Text("Loading")
-          : Text(
-              widget.receiver.name!,
-              style: TextStyle(
-                fontSize: 20,
-              ),
-            ),
+          : Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                            maxRadius: 15,
+                            backgroundColor: Colors.grey,
+                            backgroundImage:
+                                NetworkImage(widget.receiver.profilePhoto!),
+                          ),
+                          Container(
+                            width: 10,
+                          ),
+              Text(
+                  widget.receiver.name!,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
+            ],
+          ),
       actions: <Widget>[
         IconButton(
           icon: Icon(
@@ -474,39 +631,45 @@ class ModalTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15),
-      child: CustomTile(
-        mini: false,
-        leading: Container(
-          margin: EdgeInsets.only(right: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: Colors.purple,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.purple,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: CustomTile(
+          mini: false,
+          leading: Container(
+            margin: EdgeInsets.only(right: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.purple[900],
+            ),
+            padding: EdgeInsets.all(10),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: 38,
+            ),
           ),
-          padding: EdgeInsets.all(10),
-          child: Icon(
-            icon,
-            color: Colors.black,
-            size: 38,
+          subtitle: Text(
+            subtitle,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+            ),
           ),
+          title: Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 18,
+            ),
+          ),
+          onTap: () {},
         ),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-          ),
-        ),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 18,
-          ),
-        ),
-        onTap: () {},
       ),
     );
   }
