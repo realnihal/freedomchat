@@ -122,7 +122,7 @@ class _ChatListContainerState extends State<ChatListContainer> {
               itemBuilder: (context, index) {
                 Contact contact = Contact.fromMap(
                     docList[index].data() as Map<String, dynamic>);
-                return ContactView(contact);
+                return ContactView(contact,currentUserId);
               },
             );
           }

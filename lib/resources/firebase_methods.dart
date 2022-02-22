@@ -180,7 +180,7 @@ class FirebaseMethods {
     required String senderId,
     required String receiverId,
   }) =>
-      firestore.collection('message')
+      firestore.collection('messages')
           .doc(senderId)
           .collection(receiverId)
           .orderBy("timestamp")
