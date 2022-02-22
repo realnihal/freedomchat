@@ -1,11 +1,17 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, no_logic_in_create_state, empty_constructor_bodies
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:freedomchat/models/contact.dart';
+import 'package:freedomchat/resources/firebase_methods.dart';
 import 'package:freedomchat/resources/firebase_repository.dart';
+import 'package:freedomchat/screens/pageviews/widgets/contact_view.dart';
 import 'package:freedomchat/widgets/appbar.dart';
 import 'package:freedomchat/utils/utilities.dart';
 import 'package:freedomchat/widgets/custom_tile.dart';
 import 'package:freedomchat/widgets/user_circle.dart';
+
+import 'widgets/quiet_box.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({Key? key}) : super(key: key);
@@ -77,75 +83,54 @@ class _ChatListScreenState extends State<ChatListScreen> {
       appBar: customAppBar(context),
       floatingActionButton: NewChatButton(),
       body: loadState ? Center(child:CircularProgressIndicator(color: Colors.purple,))
-      : ChatListContainer(currentUserId),
+      : ChatListContainer(currentUserId: currentUserId),
     );
   }
 }
 
 class ChatListContainer extends StatefulWidget {
   final String currentUserId;
-  ChatListContainer(this.currentUserId);
+  ChatListContainer({required this.currentUserId});
 
   @override
-  _ChatListContainerState createState() => _ChatListContainerState();
+  _ChatListContainerState createState() => _ChatListContainerState(currentUserId);
 }
 
 class _ChatListContainerState extends State<ChatListContainer> {
+  String currentUserId;
+  _ChatListContainerState(this.currentUserId);
+  final FirebaseMethods _methods = FirebaseMethods();
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: ListView.builder(
-        padding: EdgeInsets.all(10),
-        itemCount: 2,
-        itemBuilder: (context, index) {
-          return CustomTile(
-            mini: false,
-            onTap: () {},
-            title: Text(
-              "Nihal Puram",
-              style: TextStyle(
-                  color: Colors.black, fontFamily: "Arial", fontSize: 19),
-            ),
-            subtitle: Text(
-              "Hello There",
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-            ),
-            leading: Container(
-              constraints: BoxConstraints(maxHeight: 60, maxWidth: 60),
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    maxRadius: 30,
-                    backgroundColor: Colors.grey,
-                    backgroundImage: NetworkImage(
-                        "https://lh3.googleusercontent.com/a-/AOh14Gguey-VN3ennU_FMVcIVF1kyYP3XjZbbqZn4pUl-c8=s96-c"),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Container(
-                      height: 10,
-                      width: 10,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.green,
-                        border: Border.all(
-                          color: Colors.black,
-                          width: 1,
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
+    return StreamBuilder<QuerySnapshot>(
+        stream: _methods.fetchContacts(
+          userId: currentUserId,
+        ),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var docList = snapshot.data?.docs;
+            if (docList == null || docList.isEmpty) {
+              return const QuietBox(
+                heading: "This is where all the contacts are listed",
+                subtitle:
+                    "Search for your friends and family to start calling or chatting with them",
+              );
+            }
+            return ListView.builder(
+              padding: const EdgeInsets.all(10),
+              itemCount: docList.length,
+              itemBuilder: (context, index) {
+                Contact contact = Contact.fromMap(
+                    docList[index].data() as Map<String, dynamic>);
+                return ContactView(contact);
+              },
+            );
+          }
+
+          return const Center(child: CircularProgressIndicator());
+        });
   }
 }
-
-
 
 class NewChatButton extends StatelessWidget {
   const NewChatButton({Key? key}) : super(key: key);
