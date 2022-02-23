@@ -53,7 +53,7 @@ flutter_native_splash:
   web: false
 
   color: "#e1d5f5"
-  image: "assets/small.png"
+  image: "assets/logo_brand.png"
   fullscreen: true
   android12: true
 # For information on the generic Dart part of this file, see the
@@ -70,6 +70,10 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/Illustration.png
+    - assets/small.png
+    - assets/logo_brand.png
+    - assets/logo_round.png
+    - assets/logo_text.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
