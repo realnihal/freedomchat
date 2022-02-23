@@ -31,21 +31,19 @@ class LoginScreenState extends State<LoginScreen> {
             children: [
               isLoginPressed
                   ? Container(
-                    height: 90,
-                    child: Center(
-                        child: CircularProgressIndicator(
+                      height: 85,
+                      child: Center(
+                          child: CircularProgressIndicator(
                         backgroundColor: Colors.purple,
                         strokeWidth: 5,
                       )),
-                  )
+                    )
                   : Column(
                       children: [
-                        Text(
-                          "Welcome",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30,
-                          ),
+                        Container(
+                          width: MediaQuery.of(context).size.width / 1.5,
+                          child:
+                              Image(image: AssetImage("assets/logo_text.png")),
                         ),
                         SizedBox(
                           height: 30,
@@ -104,10 +102,9 @@ class LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         "Login Screen",
                         style: TextStyle(
-                          color: Colors.purple.shade700,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20
-                        ),
+                            color: Colors.purple.shade700,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20),
                       ),
                     ),
                   ),
