@@ -14,6 +14,7 @@ class LoginScreen extends StatefulWidget {
 class LoginScreenState extends State<LoginScreen> {
   FirebaseRepository _repository = FirebaseRepository();
   bool isLoginPressed = false;
+  bool _isElevated = true;
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +30,14 @@ class LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               isLoginPressed
-                  ? Center(
-                      child: CircularProgressIndicator(
-                      backgroundColor: Colors.purple,
-                    ))
+                  ? Container(
+                    height: 90,
+                    child: Center(
+                        child: CircularProgressIndicator(
+                        backgroundColor: Colors.purple,
+                        strokeWidth: 5,
+                      )),
+                  )
                   : Column(
                       children: [
                         Text(
@@ -62,25 +67,52 @@ class LoginScreenState extends State<LoginScreen> {
                         image: AssetImage('assets/Illustration.png'))),
               ),
               Container(
-                child: Stack(children: [
-                  MaterialButton(
-                    color: Colors.white,
-                    minWidth: double.infinity,
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isElevated = !_isElevated;
+                    });
+                    performLogin();
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(
+                      milliseconds: 200,
+                    ),
                     height: 60,
-                    onPressed: () => performLogin(),
-                    shape: RoundedRectangleBorder(
-                        side: BorderSide(width: 0.5, color: Colors.black),
-                        borderRadius: BorderRadius.circular(50)),
-                    child: Text(
-                      "Login with Google",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.purple.shade50,
+                      borderRadius: BorderRadius.circular(50),
+                      boxShadow: _isElevated
+                          ? [
+                              const BoxShadow(
+                                color: Colors.purple,
+                                offset: Offset(4, 4),
+                                blurRadius: 15,
+                                spreadRadius: 1,
+                              ),
+                              const BoxShadow(
+                                color: Colors.white,
+                                offset: Offset(-4, -4),
+                                blurRadius: 15,
+                                spreadRadius: 1,
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Login Screen",
+                        style: TextStyle(
+                          color: Colors.purple.shade700,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20
+                        ),
                       ),
                     ),
                   ),
-                ]),
-              )
+                ),
+              ),
             ],
           ),
         ),
