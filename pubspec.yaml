@@ -53,7 +53,7 @@ flutter_native_splash:
   web: false
 
   color: "#e1d5f5"
-  image: "assets/Illustration.png"
+  image: "assets/small.png"
   android12: true
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
