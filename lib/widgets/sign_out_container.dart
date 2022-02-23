@@ -2,7 +2,9 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:freedomchat/enum/user_state.dart';
 import 'package:freedomchat/models/person.dart';
+import 'package:freedomchat/resources/firebase_methods.dart';
 import 'package:freedomchat/resources/firebase_repository.dart';
 import 'package:freedomchat/screens/login_screen.dart';
 import 'package:freedomchat/utils/utilities.dart';
@@ -17,6 +19,7 @@ class UserDetailsContainer extends StatefulWidget {
 
 class _UserDetailsContainerState extends State<UserDetailsContainer> {
   FirebaseRepository _repository = FirebaseRepository();
+  FirebaseMethods _methods = FirebaseMethods();
   late User currentUser;
   bool loadState = true;
 
@@ -76,7 +79,10 @@ class _UserDetailsContainerState extends State<UserDetailsContainer> {
                   ),
                   MaterialButton(
                     color: Colors.purple.shade200,
-                    onPressed: () => signOut(),
+                    onPressed: (){
+                      signOut();
+                      _methods.setUserState(userId: currentUser.uid, userState: UserState.Offline);
+                      },
                     shape: RoundedRectangleBorder(
                         side: BorderSide(width: 0.5, color: Colors.black),
                         borderRadius: BorderRadius.circular(50)),
