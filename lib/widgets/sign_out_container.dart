@@ -63,62 +63,63 @@ class _UserDetailsContainerState extends State<UserDetailsContainer> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Text(
-                    "User Profile",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 22,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: () => Navigator.pop(context),
                     ),
-                  ),
-                  GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _isElevated = !_isElevated;
-                      signOut();
-                      _methods.setUserState(userId: currentUser.uid, userState: UserState.Offline);
-                    });
-                  },
-                  child: AnimatedContainer(
-                    width: 100,
-                    duration: const Duration(
-                      milliseconds: 200,
+                    Text(
+                      "User Profile",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 22,
+                      ),
                     ),
-                    height: 35,
-                    decoration: BoxDecoration(
-                      color: Colors.purple[700],
-                      borderRadius: BorderRadius.circular(50),
-                      boxShadow: _isElevated
-                          ? [
-                              const BoxShadow(
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isElevated = !_isElevated;
+                          signOut();
+                          _methods.setUserState(
+                              userId: currentUser.uid,
+                              userState: UserState.Offline);
+                        });
+                      },
+                      child: AnimatedContainer(
+                        width: 100,
+                        duration: const Duration(
+                          milliseconds: 200,
+                        ),
+                        height: 35,
+                        decoration: BoxDecoration(
+                          color: Colors.purple[700],
+                          borderRadius: BorderRadius.circular(50),
+                          boxShadow: _isElevated
+                              ? [
+                                  const BoxShadow(
+                                    color: Colors.white,
+                                    offset: Offset(0, 0),
+                                    blurRadius: 10,
+                                    spreadRadius: 0.0,
+                                  ),
+                                ]
+                              : null,
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Sign Out",
+                            style: TextStyle(
                                 color: Colors.white,
-                                offset: Offset(0,0),
-                                blurRadius: 10,
-                                spreadRadius: 0.0,
-                              ),
-                            ]
-                          : null,
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Sign Out",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),]
-              ),
+                  ]),
             ),
             Container(
               color: Colors.black,
@@ -132,58 +133,135 @@ class _UserDetailsContainerState extends State<UserDetailsContainer> {
                   )
                 : Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: CircleAvatar(
-                            maxRadius: MediaQuery.of(context).size.width / 5,
-                            backgroundColor: Colors.grey,
-                            backgroundImage:
-                                NetworkImage(currentUser.photoURL!),
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            currentUser.displayName!,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Container(
-                          height: 2,
-                          width: MediaQuery.of(context).size.width / 1.5,
-                          color: Colors.purple[900],
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            currentUser.email!,
-                            style: TextStyle(
-                                color: Colors.purple[200],
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            "UID: " + currentUser.uid,
-                            style: TextStyle(
-                                color: Colors.purple[300],
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
+                    child: (MediaQuery.of(context).orientation !=
+                            Orientation.portrait)
+                        ? LandscapeColumn(currentUser: currentUser)
+                        : PortraitColumn(currentUser: currentUser),
                   )
           ],
         ),
       ),
+    );
+  }
+}
+
+class PortraitColumn extends StatelessWidget {
+  const PortraitColumn({
+    Key? key,
+    required this.currentUser,
+  }) : super(key: key);
+
+  final User currentUser;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 20),
+          child: CircleAvatar(
+            maxRadius: MediaQuery.of(context).size.width / 5,
+            backgroundColor: Colors.grey,
+            backgroundImage: NetworkImage(currentUser.photoURL!),
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            currentUser.displayName!,
+            style: TextStyle(
+                color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Container(
+          height: 2,
+          width: MediaQuery.of(context).size.width / 1.5,
+          color: Colors.purple[900],
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            currentUser.email!,
+            style: TextStyle(
+                color: Colors.purple[200],
+                fontSize: 20,
+                fontWeight: FontWeight.bold),
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            "UID: " + currentUser.uid,
+            style: TextStyle(
+                color: Colors.purple[300],
+                fontSize: 10,
+                fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class LandscapeColumn extends StatelessWidget {
+  const LandscapeColumn({
+    Key? key,
+    required this.currentUser,
+  }) : super(key: key);
+
+  final User currentUser;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: CircleAvatar(
+            maxRadius: MediaQuery.of(context).size.height / 10,
+            backgroundColor: Colors.grey,
+            backgroundImage: NetworkImage(currentUser.photoURL!),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                child: Text(
+                  currentUser.displayName!,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              Container(
+                child: Text(
+                  currentUser.email!,
+                  style: TextStyle(
+                      color: Colors.purple[200],
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              Container(
+                child: Text(
+                  "UID: " + currentUser.uid,
+                  style: TextStyle(
+                      color: Colors.purple[300],
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

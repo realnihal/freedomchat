@@ -131,9 +131,6 @@ class LoginScreenState extends State<LoginScreen> {
 
   void authenticateUser(UserCredential userCredential) {
     _repository.authenticateUser(userCredential).then((isNewUser) {
-      setState(() {
-        isLoginPressed = false;
-      });
       if (isNewUser) {
         _repository.addDataToDb(userCredential).then((value) {
           Navigator.pushNamed(context, '/second');
