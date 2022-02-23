@@ -30,6 +30,15 @@ class CustomTile extends StatelessWidget {
       onTap: onTap,
       onLongPress: onLongPress,
       child: Container(
+        decoration: BoxDecoration(
+                      color: Colors.purple.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: const [BoxShadow(
+                        color: Colors.white,
+                        blurRadius: 5,
+                        spreadRadius: 0.01)],
+                            
+                    ),
         padding: EdgeInsets.symmetric(
           horizontal: mini ? 10 : 0,
         ),
@@ -41,12 +50,6 @@ class CustomTile extends StatelessWidget {
               child: Container(
                 margin: EdgeInsets.only(left: mini ? 10 : 15),
                 padding: EdgeInsets.symmetric(vertical: mini ? 3 : 20),
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                        width: 0, color: Colors.black),
-                  ),
-                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
