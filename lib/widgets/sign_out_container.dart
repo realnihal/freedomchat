@@ -22,6 +22,7 @@ class _UserDetailsContainerState extends State<UserDetailsContainer> {
   FirebaseMethods _methods = FirebaseMethods();
   late User currentUser;
   bool loadState = true;
+  bool _isElevated = true;
 
   void loadData() {
     _repository.getCurrentUser().then((user) {
@@ -77,25 +78,46 @@ class _UserDetailsContainerState extends State<UserDetailsContainer> {
                       fontSize: 22,
                     ),
                   ),
-                  MaterialButton(
-                    color: Colors.purple.shade200,
-                    onPressed: (){
+                  GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isElevated = !_isElevated;
                       signOut();
                       _methods.setUserState(userId: currentUser.uid, userState: UserState.Offline);
-                      },
-                    shape: RoundedRectangleBorder(
-                        side: BorderSide(width: 0.5, color: Colors.black),
-                        borderRadius: BorderRadius.circular(50)),
-                    child: Text(
-                      "Sign Out",
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.purple,
-                        fontWeight: FontWeight.w600,
+                    });
+                  },
+                  child: AnimatedContainer(
+                    width: 100,
+                    duration: const Duration(
+                      milliseconds: 200,
+                    ),
+                    height: 35,
+                    decoration: BoxDecoration(
+                      color: Colors.purple[700],
+                      borderRadius: BorderRadius.circular(50),
+                      boxShadow: _isElevated
+                          ? [
+                              const BoxShadow(
+                                color: Colors.white,
+                                offset: Offset(0,0),
+                                blurRadius: 10,
+                                spreadRadius: 0.0,
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Sign Out",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20
+                        ),
                       ),
                     ),
                   ),
-                ],
+                ),]
               ),
             ),
             Container(
