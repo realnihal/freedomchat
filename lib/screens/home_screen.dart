@@ -122,42 +122,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ? Colors.purple.shade300
                         : Colors.purple.shade200),
               ),
-              title: Text(
-                "Chat",
-                style: TextStyle(
-                    fontSize: 10,
-                    color: (_page == 0)
-                        ? Colors.purple[900]
-                        : Colors.purple[400]),
-              ),
+              label: "Chat"
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.call,
                   color: (_page == 1)
                       ? Colors.purple.shade400
                       : Colors.purple.shade200),
-              title: Text(
-                "Call",
-                style: TextStyle(
-                    fontSize: 10,
-                    color: (_page == 1)
-                        ? Colors.purple[900]
-                        : Colors.purple[400]),
-              ),
+              label: "Call",
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.contact_phone,
                   color: (_page == 2)
                       ? Colors.purple.shade300
                       : Colors.purple.shade200),
-              title: Text(
-                "Contact List",
-                style: TextStyle(
-                    fontSize: 10,
-                    color: (_page == 2)
-                        ? Colors.purple[900]
-                        : Colors.purple[400]),
-              ),
+              label: "Contact List"
             ),
           ],
           onTap: navigationTapped,
