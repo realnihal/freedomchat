@@ -7,17 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:562650752073:android:84a848700ff48c5031cb98",
+        "mobilesdk_app_id": "1:562650752073:android:91d8af19efb9b8aa31cb98",
         "android_client_info": {
-          "package_name": "com.example.freedomchat"
+          "package_name": "com.nihalpuram.freedomchat"
         }
       },
       "oauth_client": [
         {
-          "client_id": "562650752073-75q6gnmdm6nl3dgmq2bemsnufv3ndr0k.apps.googleusercontent.com",
+          "client_id": "562650752073-9n86knrpud2ao70ttutqdvthqfqhf6eq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.freedomchat",
+            "package_name": "com.nihalpuram.freedomchat",
             "certificate_hash": "46dc0839a3c07c7a901aeca37d8782b8da42da95"
           }
         },
