@@ -1,4 +1,4 @@
-package com.example.freedomchat
+package com.nihalpuram.freedomchat
 
 import io.flutter.embedding.android.FlutterActivity
 
