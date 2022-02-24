@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "562650752073-9n86knrpud2ao70ttutqdvthqfqhf6eq.apps.googleusercontent.com",
+          "client_id": "562650752073-phhmjthdr8363jr5h03uva2ibgl0dkg5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.nihalpuram.freedomchat",
-            "certificate_hash": "46dc0839a3c07c7a901aeca37d8782b8da42da95"
+            "certificate_hash": "cd266f51e9a9fa71f1ee1cdbbd45dd0ebfb4d246"
           }
         },
         {
