@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:freedomchat/enum/user_state.dart';
@@ -21,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _page = 0;
   final FirebaseRepository _repository = FirebaseRepository();
   final FirebaseMethods _methods = FirebaseMethods();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   late String currentUserId;
 
   gettingCurrentUser() async {
@@ -34,6 +36,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.initState();
     gettingCurrentUser();
     WidgetsBinding.instance?.addObserver(this);
+
+    Future.delayed(Duration.zero, () {
+      this.firebaseCloudMessagingListeners(context);
+    });
+  }
+
+  void firebaseCloudMessagingListeners(BuildContext context) {
+    _firebaseMessaging.getToken().then((deviceToken) async {
+      await _methods.addNotifTokenToDb(currentUserId, deviceToken!);
+    });
   }
 
   @override
@@ -115,15 +127,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           backgroundColor: Colors.purple.shade100,
           items: [
             BottomNavigationBarItem(
-              icon: Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: Icon(Icons.chat,
-                    color: (_page == 0)
-                        ? Colors.purple.shade300
-                        : Colors.purple.shade200),
-              ),
-              label: "Chat"
-            ),
+                icon: Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: Icon(Icons.chat,
+                      color: (_page == 0)
+                          ? Colors.purple.shade300
+                          : Colors.purple.shade200),
+                ),
+                label: "Chat"),
             BottomNavigationBarItem(
               icon: Icon(Icons.call,
                   color: (_page == 1)
@@ -132,12 +143,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               label: "Call",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.contact_phone,
-                  color: (_page == 2)
-                      ? Colors.purple.shade300
-                      : Colors.purple.shade200),
-              label: "Contact List"
-            ),
+                icon: Icon(Icons.contact_phone,
+                    color: (_page == 2)
+                        ? Colors.purple.shade300
+                        : Colors.purple.shade200),
+                label: "Contact List"),
           ],
           onTap: navigationTapped,
           currentIndex: _page,

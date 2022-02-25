@@ -23,14 +23,14 @@ class FirebaseMethods {
 
   Future getUserDetailsById(id) async {
     try {
-      DocumentSnapshot documentSnapshot = await firestore.collection('persons').doc(id).get();
+      DocumentSnapshot documentSnapshot =
+          await firestore.collection('persons').doc(id).get();
       return Person.fromMap(documentSnapshot.data() as Map<String, dynamic>);
     } catch (e) {
       print(e.toString());
       return null;
     }
   }
-
 
   Future<UserCredential> signIn() async {
     GoogleSignInAccount? _signInAccount = await _googleSignIn.signIn();
@@ -58,33 +58,31 @@ class FirebaseMethods {
   Future<void> addDataToDb(UserCredential userCredential) async {
     String username = Utils.getUsername(userCredential.user?.email ?? "");
     firestore.collection('persons').doc(userCredential.user?.uid).set(
-          {
+      {
         'uid': userCredential.user?.uid,
         'email': userCredential.user?.email,
         'name': userCredential.user?.displayName,
         'profilePhoto': userCredential.user?.photoURL,
         'username': username
-          },
-        );
+      },
+    );
   }
 
   Future<bool> signOut() async {
-    try{
-    await _googleSignIn.disconnect();
-    await _googleSignIn.signOut();
-    await _auth.signOut();
-    return true;
-    }catch(e){
+    try {
+      await _googleSignIn.disconnect();
+      await _googleSignIn.signOut();
+      await _auth.signOut();
+      return true;
+    } catch (e) {
       return false;
     }
-   
   }
 
   Future<List<Person>> fetchAllUsers(User currentUser) async {
     List<Person> userList = [];
 
-    QuerySnapshot querySnapshot =
-        await firestore.collection('persons').get();
+    QuerySnapshot querySnapshot = await firestore.collection('persons').get();
 
     for (var i = 0; i < querySnapshot.docs.length; i++) {
       if (querySnapshot.docs[i].id != currentUser.uid) {
@@ -105,17 +103,20 @@ class FirebaseMethods {
         .doc(message.senderId)
         .collection(message.receiverId!)
         .add(map);
-    
+
     addToContacts(senderId: sender.uid, receiverId: receiver.uid);
-    
+
     return await firestore
         .collection("messages")
         .doc(message.receiverId)
         .collection(message.senderId!)
         .add(map);
   }
-    DocumentReference getContactsDocument({required String of, required String forContact}) =>
-      firestore.collection('persons')
+
+  DocumentReference getContactsDocument(
+          {required String of, required String forContact}) =>
+      firestore
+          .collection('persons')
           .doc(of)
           .collection('contacts')
           .doc(forContact);
@@ -125,7 +126,6 @@ class FirebaseMethods {
 
     await addToSenderContacts(senderId!, receiverId!, currentTime);
     await addToReceiverContacts(senderId, receiverId, currentTime);
-  
   }
 
   Future<void> addToSenderContacts(
@@ -172,23 +172,26 @@ class FirebaseMethods {
     }
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> fetchContacts({required String userId}) => firestore.collection('persons')
-    .doc(userId)
-    .collection('contacts')
-    .snapshots();
+  Stream<QuerySnapshot<Map<String, dynamic>>> fetchContacts(
+          {required String userId}) =>
+      firestore
+          .collection('persons')
+          .doc(userId)
+          .collection('contacts')
+          .snapshots();
 
   Stream<QuerySnapshot> fetchLastMessageBetween({
     required String senderId,
     required String receiverId,
   }) =>
-      firestore.collection('messages')
+      firestore
+          .collection('messages')
           .doc(senderId)
           .collection(receiverId)
           .orderBy("timestamp")
           .snapshots();
 
-
-void setUserState({required String userId, required UserState userState}) {
+  void setUserState({required String userId, required UserState userState}) {
     int stateNum = Utils.stateToNum(userState);
 
     firestore.collection('persons').doc(userId).update({
@@ -197,6 +200,11 @@ void setUserState({required String userId, required UserState userState}) {
   }
 
   Stream<DocumentSnapshot> getUserStream({required String uid}) =>
-    firestore.collection('persons').doc(uid).snapshots();
-  
+      firestore.collection('persons').doc(uid).snapshots();
+
+  Future<void> addNotifTokenToDb(String userID, String token) async {
+    firestore.collection('tokens').doc(userID).set(
+      {'uid': userID, 'token': token},
+    );
+  }
 }
