@@ -14,7 +14,23 @@
       },
       "oauth_client": [
         {
-          "client_id": "562650752073-9n86knrpud2ao70ttutqdvthqfqhf6eq.apps.googleusercontent.com",
+          "client_id": "562650752073-ns4kn15ba6tmsqvac4fvc4tot7kq97sv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nihalpuram.freedomchat",
+            "certificate_hash": "840110b2b05b95596437c50a9e524935e91a6e66"
+          }
+        },
+        {
+          "client_id": "562650752073-phhmjthdr8363jr5h03uva2ibgl0dkg5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nihalpuram.freedomchat",
+            "certificate_hash": "cd266f51e9a9fa71f1ee1cdbbd45dd0ebfb4d246"
+          }
+        },
+        {
+          "client_id": "562650752073-rlsghe5tiurksldtg7bom351726rh3r8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.nihalpuram.freedomchat",
