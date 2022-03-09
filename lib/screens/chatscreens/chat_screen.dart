@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_is_empty, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, prefer_final_fields
 
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +11,7 @@ import 'package:freedomchat/widgets/appbar.dart';
 import 'package:freedomchat/widgets/custom_tile.dart';
 import 'package:freedomchat/models/person.dart';
 import 'package:freedomchat/resources/firebase_repository.dart';
-import 'package:freedomchat/widgets/user_circle.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -432,6 +434,12 @@ class _ChatScreenState extends State<ChatScreen> {
           });
     }
 
+    void sendNotif(String receiversID, String senderID, String message)async{
+      final url = Uri.http('172.104.206.128','/nihal');
+      print("Sent Notification");
+      final response = await http.post(url, body: json.encode({'id' : receiversID,'sender':senderID,'message':message}));
+      print(response.body);
+    }
     sendMessage() {
       var text = textFieldController.text;
 
@@ -449,6 +457,7 @@ class _ChatScreenState extends State<ChatScreen> {
       textFieldController.text = "";
 
       _repository.addMessageToDb(_message, sender, widget.receiver);
+      sendNotif(widget.receiver.uid!,sender.uid!,text);
     }
 
     return Container(
