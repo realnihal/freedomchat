@@ -1,18 +1,24 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_is_empty, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, prefer_final_fields
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_is_empty, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, prefer_final_fields, unused_local_variable
 
 import 'dart:convert';
-
+import 'dart:ffi';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:freedomchat/enum/view_state.dart';
 import 'package:freedomchat/models/message.dart';
+import 'package:freedomchat/provider/image_upload_provider.dart';
+import 'package:freedomchat/screens/chatscreens/widget/cached_network.dart';
 import 'package:freedomchat/widgets/appbar.dart';
 import 'package:freedomchat/widgets/custom_tile.dart';
 import 'package:freedomchat/models/person.dart';
 import 'package:freedomchat/resources/firebase_repository.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final Person receiver;
@@ -27,6 +33,7 @@ class _ChatScreenState extends State<ChatScreen> {
   TextEditingController textFieldController = TextEditingController();
   FirebaseRepository _repository = FirebaseRepository();
   ScrollController _listScrollController = ScrollController();
+  late ImageUploadProvider _imageUploadProvider;
   late Person sender;
   late String _currentUserId;
   FocusNode _textFieldFocus = FocusNode();
@@ -57,6 +64,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _imageUploadProvider = Provider.of<ImageUploadProvider>(context);
     return Scaffold(
       backgroundColor: Colors.purple[50],
       appBar: customAppBar(context),
@@ -71,9 +79,17 @@ class _ChatScreenState extends State<ChatScreen> {
                 Flexible(
                   child: messageList(),
                 ),
+                _imageUploadProvider.getViewState == ViewState.LOADING
+                    ? Container(
+                        margin: EdgeInsets.only(right: 15),
+                        alignment: Alignment.centerRight,
+                        child: CircularProgressIndicator(
+                          color: Colors.purple,
+                        ))
+                    : Container(),
                 chatControls(),
                 showEmojiPicker
-                    ? Container(
+                    ? SizedBox(
                         height: 300,
                         child: emojiContainer(),
                       )
@@ -168,10 +184,10 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   String getdate(DateTime tm) {
-    DateTime today = new DateTime.now();
-    Duration oneDay = new Duration(days: 1);
-    Duration twoDay = new Duration(days: 2);
-    Duration oneWeek = new Duration(days: 7);
+    DateTime today = DateTime.now();
+    Duration oneDay = Duration(days: 1);
+    Duration twoDay = Duration(days: 2);
+    Duration oneWeek = Duration(days: 7);
     String? month;
     switch (tm.month) {
       case 1:
@@ -278,13 +294,11 @@ class _ChatScreenState extends State<ChatScreen> {
             child: getMessage(snapshot),
           ),
         ),
-        Container(
-          child: Text(
-            d24,
-            style: TextStyle(
-              color: Colors.purple[300],
-              fontSize: 12,
-            ),
+        Text(
+          d24,
+          style: TextStyle(
+            color: Colors.purple[300],
+            fontSize: 12,
           ),
         ),
       ],
@@ -292,13 +306,25 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   getMessage(DocumentSnapshot snapshot) {
-    return Text(
-      snapshot['message'],
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 16.0,
-      ),
-    );
+    return snapshot['message'] != 'IMAGE'
+        ? Text(
+            snapshot['message'],
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16.0,
+            ),
+          )
+        : snapshot["photoUrl"] != ''
+            ? CachedNImage(
+                url: snapshot["photoUrl"],
+              )
+            : Text(
+                snapshot['message'],
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16.0,
+                ),
+              );
   }
 
   Widget receiverLayout(DocumentSnapshot snapshot) {
@@ -356,6 +382,18 @@ class _ChatScreenState extends State<ChatScreen> {
       });
     }
 
+    Future pickImage(ImageSource source) async {
+      final image = await ImagePicker().pickImage(source: source);
+      if (image == null) return;
+
+      File imageTemp = File(image.path);
+      _repository.uploadImage(
+          image: imageTemp,
+          receiverId: widget.receiver.uid!,
+          senderId: _currentUserId,
+          imageUploadProvider: _imageUploadProvider);
+    }
+
     addMediaModal(context) {
       showModalBottomSheet(
           shape: RoundedRectangleBorder(
@@ -402,30 +440,43 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: ListView(
                     children: <Widget>[
                       ModalTile(
-                        title: "Media",
-                        subtitle: "Share Photos and Video",
-                        icon: Icons.image,
+                          title: "Media",
+                          subtitle: "Share Photos and Video",
+                          icon: Icons.image,
+                          ontap: () {
+                            pickImage(ImageSource.gallery);
+                            Navigator.maybePop(context);
+                          }),
+                      ModalTile(
+                        title: "File",
+                        subtitle: "Share files",
+                        icon: Icons.tab,
+                        ontap: () {},
                       ),
                       ModalTile(
-                          title: "File",
-                          subtitle: "Share files",
-                          icon: Icons.tab),
+                        title: "Contact",
+                        subtitle: "Share contacts",
+                        icon: Icons.contacts,
+                        ontap: () {},
+                      ),
                       ModalTile(
-                          title: "Contact",
-                          subtitle: "Share contacts",
-                          icon: Icons.contacts),
+                        title: "Location",
+                        subtitle: "Share a location",
+                        icon: Icons.add_location,
+                        ontap: () {},
+                      ),
                       ModalTile(
-                          title: "Location",
-                          subtitle: "Share a location",
-                          icon: Icons.add_location),
+                        title: "Schedule Call",
+                        subtitle: "Arrange a skype call and get reminders",
+                        icon: Icons.schedule,
+                        ontap: () {},
+                      ),
                       ModalTile(
-                          title: "Schedule Call",
-                          subtitle: "Arrange a skype call and get reminders",
-                          icon: Icons.schedule),
-                      ModalTile(
-                          title: "Create Poll",
-                          subtitle: "Share polls",
-                          icon: Icons.poll)
+                        title: "Create Poll",
+                        subtitle: "Share polls",
+                        icon: Icons.poll,
+                        ontap: () {},
+                      )
                     ],
                   ),
                 ),
@@ -434,12 +485,15 @@ class _ChatScreenState extends State<ChatScreen> {
           });
     }
 
-    void sendNotif(String receiversID, String senderID, String message)async{
-      final url = Uri.http('172.104.206.128','/nihal');
+    void sendNotif(String receiversID, String senderID, String message) async {
+      final url = Uri.http('172.104.206.128', '/nihal');
       print("Sent Notification");
-      final response = await http.post(url, body: json.encode({'id' : receiversID,'sender':senderID,'message':message}));
+      final response = await http.post(url,
+          body: json.encode(
+              {'id': receiversID, 'sender': senderID, 'message': message}));
       print(response.body);
     }
+
     sendMessage() {
       var text = textFieldController.text;
 
@@ -457,7 +511,7 @@ class _ChatScreenState extends State<ChatScreen> {
       textFieldController.text = "";
 
       _repository.addMessageToDb(_message, sender, widget.receiver);
-      sendNotif(widget.receiver.uid!,sender.uid!,text);
+      sendNotif(widget.receiver.uid!, sender.uid!, text);
     }
 
     return Container(
@@ -505,7 +559,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     border: OutlineInputBorder(
                         borderRadius: const BorderRadius.all(
-                          const Radius.circular(50.0),
+                          Radius.circular(50.0),
                         ),
                         borderSide: BorderSide.none),
                     contentPadding:
@@ -548,9 +602,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
           isWriting
               ? Container()
-              : Icon(
-                  Icons.camera_alt,
-                  color: Colors.purple[900],
+              : GestureDetector(
+                  onTap: () => pickImage(ImageSource.camera),
+                  child: Icon(
+                    Icons.camera_alt,
+                    color: Colors.purple[900],
+                  ),
                 ),
           isWriting
               ? Container(
@@ -587,20 +644,19 @@ class _ChatScreenState extends State<ChatScreen> {
       title: loadState
           ? Text("Loading")
           : Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                            maxRadius: 15,
-                            backgroundColor: Colors.grey,
-                            backgroundImage:
-                                NetworkImage(widget.receiver.profilePhoto!),
-                          ),
-                          Container(
-                            width: 10,
-                          ),
-              Flexible(
-                child: Text(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  maxRadius: 15,
+                  backgroundColor: Colors.grey,
+                  backgroundImage: NetworkImage(widget.receiver.profilePhoto!),
+                ),
+                Container(
+                  width: 10,
+                ),
+                Flexible(
+                  child: Text(
                     widget.receiver.name!,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -608,9 +664,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       fontSize: 17,
                     ),
                   ),
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
       actions: <Widget>[
         IconButton(
           icon: Icon(
@@ -633,53 +689,53 @@ class ModalTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
+  final Function ontap;
 
   const ModalTile({
     required this.title,
     required this.subtitle,
     required this.icon,
+    required this.ontap,
   });
+
+  func() {
+    ontap();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.purple,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: CustomTile(
-          mini: false,
-          leading: Container(
-            margin: EdgeInsets.only(right: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: Colors.purple[900],
-            ),
-            padding: EdgeInsets.all(10),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 38,
-            ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: CustomTile(
+        mini: false,
+        onTap: func,
+        leading: Container(
+          margin: EdgeInsets.only(right: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.purple[900],
           ),
-          subtitle: Text(
-            subtitle,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
+          padding: EdgeInsets.all(10),
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: 38,
           ),
-          title: Text(
-            title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              fontSize: 18,
-            ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(
+            color: Colors.purple[900],
+            fontSize: 12,
           ),
-          onTap: () {},
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.purple,
+            fontSize: 18,
+          ),
         ),
       ),
     );
