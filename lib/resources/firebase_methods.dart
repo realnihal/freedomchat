@@ -1,36 +1,40 @@
 // ignore_for_file: deprecated_member_use, unused_local_variable, prefer_collection_literals
-
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freedomchat/enum/user_state.dart';
 import 'package:freedomchat/models/contact.dart';
 import 'package:freedomchat/models/message.dart';
+import 'package:freedomchat/provider/image_upload_provider.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:freedomchat/models/person.dart';
 import 'package:freedomchat/utils/utilities.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class FirebaseMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+   String url = "";
+  static final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
   static final FirebaseFirestore firestore = FirebaseFirestore.instance;
   Person user = Person();
 
   Future<User> getCurrentUser() async {
     User currentUser;
+    // ignore: await_only_futures
     currentUser = await _auth.currentUser!;
     return currentUser;
   }
 
   Future getUserDetailsById(id) async {
     try {
-      DocumentSnapshot documentSnapshot = await firestore.collection('persons').doc(id).get();
+      DocumentSnapshot documentSnapshot =
+          await firestore.collection('persons').doc(id).get();
       return Person.fromMap(documentSnapshot.data() as Map<String, dynamic>);
     } catch (e) {
-      print(e.toString());
       return null;
     }
   }
-
 
   Future<UserCredential> signIn() async {
     GoogleSignInAccount? _signInAccount = await _googleSignIn.signIn();
@@ -58,33 +62,31 @@ class FirebaseMethods {
   Future<void> addDataToDb(UserCredential userCredential) async {
     String username = Utils.getUsername(userCredential.user?.email ?? "");
     firestore.collection('persons').doc(userCredential.user?.uid).set(
-          {
+      {
         'uid': userCredential.user?.uid,
         'email': userCredential.user?.email,
         'name': userCredential.user?.displayName,
         'profilePhoto': userCredential.user?.photoURL,
         'username': username
-          },
-        );
+      },
+    );
   }
 
   Future<bool> signOut() async {
-    try{
-    await _googleSignIn.disconnect();
-    await _googleSignIn.signOut();
-    await _auth.signOut();
-    return true;
-    }catch(e){
+    try {
+      await _googleSignIn.disconnect();
+      await _googleSignIn.signOut();
+      await _auth.signOut();
+      return true;
+    } catch (e) {
       return false;
     }
-   
   }
 
   Future<List<Person>> fetchAllUsers(User currentUser) async {
     List<Person> userList = [];
 
-    QuerySnapshot querySnapshot =
-        await firestore.collection('persons').get();
+    QuerySnapshot querySnapshot = await firestore.collection('persons').get();
 
     for (var i = 0; i < querySnapshot.docs.length; i++) {
       if (querySnapshot.docs[i].id != currentUser.uid) {
@@ -105,17 +107,20 @@ class FirebaseMethods {
         .doc(message.senderId)
         .collection(message.receiverId!)
         .add(map);
-    
+
     addToContacts(senderId: sender.uid, receiverId: receiver.uid);
-    
+
     return await firestore
         .collection("messages")
         .doc(message.receiverId)
         .collection(message.senderId!)
         .add(map);
   }
-    DocumentReference getContactsDocument({required String of, required String forContact}) =>
-      firestore.collection('persons')
+
+  DocumentReference getContactsDocument(
+          {required String of, required String forContact}) =>
+      firestore
+          .collection('persons')
           .doc(of)
           .collection('contacts')
           .doc(forContact);
@@ -125,7 +130,6 @@ class FirebaseMethods {
 
     await addToSenderContacts(senderId!, receiverId!, currentTime);
     await addToReceiverContacts(senderId, receiverId, currentTime);
-  
   }
 
   Future<void> addToSenderContacts(
@@ -172,23 +176,26 @@ class FirebaseMethods {
     }
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> fetchContacts({required String userId}) => firestore.collection('persons')
-    .doc(userId)
-    .collection('contacts')
-    .snapshots();
+  Stream<QuerySnapshot<Map<String, dynamic>>> fetchContacts(
+          {required String userId}) =>
+      firestore
+          .collection('persons')
+          .doc(userId)
+          .collection('contacts')
+          .snapshots();
 
   Stream<QuerySnapshot> fetchLastMessageBetween({
     required String senderId,
     required String receiverId,
   }) =>
-      firestore.collection('messages')
+      firestore
+          .collection('messages')
           .doc(senderId)
           .collection(receiverId)
           .orderBy("timestamp")
           .snapshots();
 
-
-void setUserState({required String userId, required UserState userState}) {
+  void setUserState({required String userId, required UserState userState}) {
     int stateNum = Utils.stateToNum(userState);
 
     firestore.collection('persons').doc(userId).update({
@@ -197,6 +204,64 @@ void setUserState({required String userId, required UserState userState}) {
   }
 
   Stream<DocumentSnapshot> getUserStream({required String uid}) =>
-    firestore.collection('persons').doc(uid).snapshots();
-  
+      firestore.collection('persons').doc(uid).snapshots();
+
+  Future<void> addNotifTokenToDb(String userID, String token) async {
+    firestore.collection('tokens').doc(userID).set(
+      {'uid': userID, 'token': token},
+    );
+  }
+
+  Future uploadImageToStorage(File image, String receiverId,
+   String senderId,ImageUploadProvider imageUploadProvider) async {
+    Reference ref = _firebaseStorage
+        .ref()
+        .child(DateTime.now().millisecondsSinceEpoch.toString());
+    UploadTask uploadTask = ref.putFile(image);
+    await uploadTask.whenComplete(() {
+      ref.getDownloadURL().then((value)async {
+        url = value;
+        await setImageMsg(url,receiverId,senderId,imageUploadProvider);
+      });
+    }).catchError((onError) {
+    });
+  }
+
+
+  Future<void> setImageMsg(String url, String receiverId, String senderId,ImageUploadProvider imageUploadProvider) async {
+    Message message;
+    message = Message.imageMessage(
+        message: "IMAGE",
+        receiverId: receiverId,
+        senderId: senderId,
+        photoUrl: url,
+        timestamp: Timestamp.now(),
+        type: 'image');
+
+    // create imagemap
+    var map = message.toImageMap();
+
+    // var map = Map<String, dynamic>();
+    await firestore
+        .collection('messages')
+        .doc(message.senderId)
+        .collection(message.receiverId!)
+        .add(map);
+
+    firestore
+        .collection('messages')
+        .doc(message.receiverId)
+        .collection(message.senderId!)
+        .add(map);
+    imageUploadProvider.setToIdle();
+  }
+
+
+  void uploadImage(File image, String receiverId, String senderId,
+  ImageUploadProvider imageUploadProvider)async {
+    
+    imageUploadProvider.setToLoading();
+    await uploadImageToStorage(image,receiverId,senderId,imageUploadProvider);
+  }
+
 }
