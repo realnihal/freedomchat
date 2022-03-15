@@ -3,7 +3,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:freedomchat/enum/user_state.dart';
 import 'package:freedomchat/resources/firebase_methods.dart';
@@ -11,9 +10,10 @@ import 'package:freedomchat/resources/firebase_repository.dart';
 import 'package:freedomchat/screens/pageviews/calllist_screen.dart';
 import 'package:freedomchat/screens/pageviews/chatlist_screen.dart';
 import 'package:freedomchat/screens/pageviews/contact_list_screen.dart';
-import 'package:freedomchat/screens/pageviews/widgets/quiet_box.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -132,45 +132,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 curve: Curves.ease,);
             }),
           )
-          // CupertinoTabBar(
-          //   border: const Border(
-          //     top: BorderSide(
-          //       color: Colors.black,
-          //       width: 0.5,
-          //     ),
-          //     bottom: BorderSide(
-          //       color: Colors.black,
-          //       width: 0.5,
-          //     ),
-          //   ),
-          //   backgroundColor: Colors.purple.shade100,
-          //   items: [
-          //     BottomNavigationBarItem(
-          //         icon: Padding(
-          //           padding: const EdgeInsets.only(top: 5),
-          //           child: Icon(Icons.chat,
-          //               color: (_page == 0)
-          //                   ? Colors.purple.shade300
-          //                   : Colors.purple.shade200),
-          //         ),
-          //         label: "Chat"),
-          //     BottomNavigationBarItem(
-          //       icon: Icon(Icons.call,
-          //           color: (_page == 1)
-          //               ? Colors.purple.shade400
-          //               : Colors.purple.shade200),
-          //       label: "Call",
-          //     ),
-          //     BottomNavigationBarItem(
-          //         icon: Icon(Icons.contact_phone,
-          //             color: (_page == 2)
-          //                 ? Colors.purple.shade300
-          //                 : Colors.purple.shade200),
-          //         label: "Contact List"),
-          //   ],
-          //   onTap: navigationTapped,
-          //   currentIndex: _page,
-          // ),
           ),
     );
   }
