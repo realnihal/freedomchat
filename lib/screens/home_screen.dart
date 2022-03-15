@@ -1,8 +1,8 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_literals_to_create_immutables, unnecessary_null_comparison
 
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:freedomchat/enum/user_state.dart';
 import 'package:freedomchat/resources/firebase_methods.dart';
@@ -10,9 +10,10 @@ import 'package:freedomchat/resources/firebase_repository.dart';
 import 'package:freedomchat/screens/pageviews/calllist_screen.dart';
 import 'package:freedomchat/screens/pageviews/chatlist_screen.dart';
 import 'package:freedomchat/screens/pageviews/contact_list_screen.dart';
-import 'package:freedomchat/screens/pageviews/widgets/quiet_box.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -38,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance?.addObserver(this);
 
     Future.delayed(Duration.zero, () {
-      this.firebaseCloudMessagingListeners(context);
+      firebaseCloudMessagingListeners(context);
     });
   }
 
@@ -112,47 +113,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         onPageChanged: onPageChanged,
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: CupertinoTabBar(
-          border: const Border(
-            top: BorderSide(
-              color: Colors.black,
-              width: 0.5,
-            ),
-            bottom: BorderSide(
-              color: Colors.black,
-              width: 0.5,
-            ),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: CurvedNavigationBar(
+            color: Colors.purple,
+            height: 40,
+            index: _page,
+            animationDuration: const Duration(milliseconds: 500),
+            backgroundColor: Colors.transparent,
+            items: [
+              Icon(Icons.chat, size: 30, color: Colors.purple[200]),
+              Icon(Icons.call, size: 30, color: Colors.purple[200]),
+              Icon(Icons.contact_phone, size: 30, color: Colors.purple[200]),
+            ],
+            onTap: (_page) => setState(() {
+              onPageChanged(_page);
+              pageController.animateToPage(_page,
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.ease,);
+            }),
+          )
           ),
-          backgroundColor: Colors.purple.shade100,
-          items: [
-            BottomNavigationBarItem(
-                icon: Padding(
-                  padding: const EdgeInsets.only(top: 5),
-                  child: Icon(Icons.chat,
-                      color: (_page == 0)
-                          ? Colors.purple.shade300
-                          : Colors.purple.shade200),
-                ),
-                label: "Chat"),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.call,
-                  color: (_page == 1)
-                      ? Colors.purple.shade400
-                      : Colors.purple.shade200),
-              label: "Call",
-            ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.contact_phone,
-                    color: (_page == 2)
-                        ? Colors.purple.shade300
-                        : Colors.purple.shade200),
-                label: "Contact List"),
-          ],
-          onTap: navigationTapped,
-          currentIndex: _page,
-        ),
-      ),
     );
   }
 }

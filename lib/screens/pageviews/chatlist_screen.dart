@@ -3,9 +3,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freedomchat/models/contact.dart';
+import 'package:freedomchat/models/menu_item.dart';
 import 'package:freedomchat/resources/firebase_methods.dart';
 import 'package:freedomchat/resources/firebase_repository.dart';
 import 'package:freedomchat/screens/pageviews/widgets/contact_view.dart';
+import 'package:freedomchat/screens/pageviews/widgets/menu_item.dart';
 import 'package:freedomchat/widgets/appbar.dart';
 import 'package:freedomchat/utils/utilities.dart';
 import 'package:freedomchat/widgets/custom_tile.dart';
@@ -27,7 +29,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   late String initials;
   bool loadState = true;
 
-  void loadData(){
+  void loadData() {
     _repository.getCurrentUser().then((user) {
       setState(() {
         currentUserId = user.uid;
@@ -53,8 +55,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
         onPressed: () {},
       ),
       centerTitle: true,
-      title: loadState ? Center(child:CircularProgressIndicator(color: Colors.purple,)) 
-      : UserCircle(initials),
+      title: loadState
+          ? Center(
+              child: CircularProgressIndicator(
+              color: Colors.purple,
+            ))
+          : UserCircle(initials),
       actions: [
         IconButton(
           icon: Icon(
@@ -65,16 +71,43 @@ class _ChatListScreenState extends State<ChatListScreen> {
             Navigator.pushNamed(context, '/third');
           },
         ),
-        IconButton(
-          icon: Icon(
-            Icons.more_vert,
-            color: Colors.purple[50],
-          ),
-          onPressed: () {},
-        )
+        PopupMenuButton<MenuItem>(
+          color: Colors.purple.shade50,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+          onSelected: (item) => onSelected(context,item),
+          itemBuilder: (context) => [
+                  ...MenuItems.itemsFirst.map(buildItem).toList(),
+                  PopupMenuDivider(),
+                  ...MenuItems.itemsSecond.map(buildItem).toList(),
+                ])
       ],
     );
   }
+
+  void onSelected(BuildContext context,MenuItem item){
+    switch(item){
+      case MenuItems.itemSettings:
+      //todo functionality
+      break;
+      case MenuItems.itemShare:
+      //todo functionality
+      break;
+      case MenuItems.itemSignOut:
+      //todo functionality
+      break;
+    }
+  }
+
+  PopupMenuItem<MenuItem> buildItem(MenuItem item) => PopupMenuItem<MenuItem>(
+        value: item,
+        child: Row(
+          children: [
+            Icon(item.icon,color: Colors.purple.shade900,size: 20,),
+            const SizedBox(width: 12,),
+            Text(item.text),
+          ],
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -82,8 +115,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
       backgroundColor: Colors.purple.shade50,
       appBar: customAppBar(context),
       floatingActionButton: NewChatButton(),
-      body: loadState ? Center(child:CircularProgressIndicator(color: Colors.purple,))
-      : ChatListContainer(currentUserId: currentUserId),
+      body: loadState
+          ? Center(
+              child: CircularProgressIndicator(
+              color: Colors.purple,
+            ))
+          : ChatListContainer(currentUserId: currentUserId),
     );
   }
 }
@@ -93,7 +130,8 @@ class ChatListContainer extends StatefulWidget {
   ChatListContainer({required this.currentUserId});
 
   @override
-  _ChatListContainerState createState() => _ChatListContainerState(currentUserId);
+  _ChatListContainerState createState() =>
+      _ChatListContainerState(currentUserId);
 }
 
 class _ChatListContainerState extends State<ChatListContainer> {
@@ -122,7 +160,7 @@ class _ChatListContainerState extends State<ChatListContainer> {
               itemBuilder: (context, index) {
                 Contact contact = Contact.fromMap(
                     docList[index].data() as Map<String, dynamic>);
-                return ContactView(contact,currentUserId);
+                return ContactView(contact, currentUserId);
               },
             );
           }
