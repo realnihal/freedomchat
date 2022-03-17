@@ -39,12 +39,12 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         initialRoute: "/",
         routes: {
-          "/search_screen": (context) => SearchScreen(),
+          "/search_screen": (context) => const SearchScreen(),
         },
         onGenerateRoute: (settings){
           switch (settings.name){
             case '/second':
-              return PageTransition(child: HomeScreen(), type: PageTransitionType.fade);
+              return PageTransition(child: const HomeScreen(), type: PageTransitionType.fade);
             case '/third':
               return PageTransition(child: const SearchScreen(), type: PageTransitionType.fade);
             default:

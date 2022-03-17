@@ -9,6 +9,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:freedomchat/enum/view_state.dart';
 import 'package:freedomchat/models/message.dart';
 import 'package:freedomchat/provider/image_upload_provider.dart';
+import 'package:freedomchat/screens/callscreen/dialer_screen.dart';
 import 'package:freedomchat/screens/callscreen/video_call_screen.dart';
 import 'package:freedomchat/screens/chatscreens/widget/cached_image.dart';
 import 'package:freedomchat/screens/chatscreens/widget/cached_network.dart';
@@ -366,13 +367,11 @@ class _ChatScreenState extends State<ChatScreen> {
             child: getMessage(snapshot),
           ),
         ),
-        Container(
-          child: Text(
-            d24,
-            style: TextStyle(
-              color: Colors.purple[800],
-              fontSize: 12,
-            ),
+        Text(
+          d24,
+          style: TextStyle(
+            color: Colors.purple[800],
+            fontSize: 12,
           ),
         ),
       ],
@@ -699,9 +698,10 @@ class _ChatScreenState extends State<ChatScreen> {
               PageTransition(
                 ctx: (context),
                 type: PageTransitionType.rightToLeft,
-                child: VideoCallScreen(
-                roomID: geturl(widget.receiver.uid!, _currentUserId),
-                ),
+                child: DialerScreen(receiver: widget.receiver)
+                // child: VideoCallScreen(
+                // roomID: geturl(widget.receiver.uid!, _currentUserId),
+                // ),
               ),
             )
           },
