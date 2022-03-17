@@ -26,6 +26,9 @@ class _DialerScreenState extends State<DialerScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              SizedBox(
+                height: 40,
+              ),
               ClipRRect(
                 borderRadius: BorderRadius.circular(40),
                 child: CachedNetworkImage(
@@ -52,12 +55,10 @@ class _DialerScreenState extends State<DialerScreen> {
                 style: TextStyle(fontSize: 20, color: Colors.white),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height/4,
+                height: MediaQuery.of(context).size.height / 3,
               ),
               GestureDetector(
-                onTap: () {
-                  
-                },
+                onTap: () {},
                 child: GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: Container(
@@ -65,7 +66,7 @@ class _DialerScreenState extends State<DialerScreen> {
                     height: 55,
                     decoration: BoxDecoration(
                       color: Colors.red.shade600,
-                      borderRadius: BorderRadius.circular(50),  
+                      borderRadius: BorderRadius.circular(50),
                     ),
                     child: Center(
                       child: Text(
