@@ -113,9 +113,10 @@ class _SearchScreenState extends State<SearchScreen> {
               PageTransition(
                 ctx: (context),
                 type: PageTransitionType.rightToLeft,
-                 child: ChatScreen(
-                receiver:searchedUser,
-              ))
+                child: ChatScreen(
+                  receiver: searchedUser,
+                ),
+              ),
             );
           },
           leading: CircleAvatar(

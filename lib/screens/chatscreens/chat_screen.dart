@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_is_empty, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, prefer_final_fields, unused_local_variable
 
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
@@ -10,6 +9,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:freedomchat/enum/view_state.dart';
 import 'package:freedomchat/models/message.dart';
 import 'package:freedomchat/provider/image_upload_provider.dart';
+import 'package:freedomchat/screens/callscreen/video_call_screen.dart';
+import 'package:freedomchat/screens/chatscreens/widget/cached_image.dart';
 import 'package:freedomchat/screens/chatscreens/widget/cached_network.dart';
 import 'package:freedomchat/widgets/appbar.dart';
 import 'package:freedomchat/widgets/custom_tile.dart';
@@ -18,7 +19,10 @@ import 'package:freedomchat/resources/firebase_repository.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+
+import '../pageviews/widgets/online_dot_indicator.dart';
 
 class ChatScreen extends StatefulWidget {
   final Person receiver;
@@ -630,6 +634,14 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  String geturl(String receiverID, String senderId) {
+    if (receiverID.compareTo(senderId) > 0) {
+      return senderId + receiverID;
+    } else {
+      return receiverID + senderId;
+    }
+  }
+
   CustomAppBar customAppBar(context) {
     return CustomAppBar(
       leading: IconButton(
@@ -642,15 +654,24 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       centerTitle: false,
       title: loadState
-          ? Text("Loading")
+          ? Text(
+              "Loading...",
+              style: TextStyle(fontSize: 10),
+            )
           : Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  maxRadius: 15,
-                  backgroundColor: Colors.grey,
-                  backgroundImage: NetworkImage(widget.receiver.profilePhoto!),
+                Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    CachedImage(
+                      widget.receiver.profilePhoto!,
+                      radius: 40,
+                      isRound: true,
+                    ),
+                    OnlineDotIndicator(uid: widget.receiver.uid!)
+                  ],
                 ),
                 Container(
                   width: 10,
@@ -672,7 +693,18 @@ class _ChatScreenState extends State<ChatScreen> {
           icon: Icon(
             Icons.video_call,
           ),
-          onPressed: () {},
+          onPressed: () => {
+            Navigator.push(
+              context,
+              PageTransition(
+                ctx: (context),
+                type: PageTransitionType.rightToLeft,
+                child: VideoCallScreen(
+                roomID: geturl(widget.receiver.uid!, _currentUserId),
+                ),
+              ),
+            )
+          },
         ),
         IconButton(
           icon: Icon(

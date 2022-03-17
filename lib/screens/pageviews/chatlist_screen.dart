@@ -10,7 +10,6 @@ import 'package:freedomchat/screens/pageviews/widgets/contact_view.dart';
 import 'package:freedomchat/screens/pageviews/widgets/menu_item.dart';
 import 'package:freedomchat/widgets/appbar.dart';
 import 'package:freedomchat/utils/utilities.dart';
-import 'package:freedomchat/widgets/custom_tile.dart';
 import 'package:freedomchat/widgets/user_circle.dart';
 
 import 'widgets/quiet_box.dart';
