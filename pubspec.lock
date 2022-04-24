@@ -9,12 +9,12 @@ packages:
     source: hosted
     version: "31.0.0"
   agora_rtc_engine:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: agora_rtc_engine
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.2.1"
+    version: "4.2.2"
   agora_uikit:
     dependency: "direct main"
     description:
@@ -366,6 +366,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
+  google_fonts:
+    dependency: "direct main"
+    description:
+      name: google_fonts
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.3.1"
   google_sign_in:
     dependency: "direct main"
     description:
@@ -954,4 +961,4 @@ packages:
     version: "3.1.0"
 sdks:
   dart: ">=2.16.0 <3.0.0"
-  flutter: ">=2.8.0"
+  flutter: ">=2.10.0-0"

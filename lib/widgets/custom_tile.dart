@@ -31,14 +31,12 @@ class CustomTile extends StatelessWidget {
       onLongPress: onLongPress,
       child: Container(
         decoration: BoxDecoration(
-                      color: Colors.purple.shade50,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: const [BoxShadow(
-                        color: Colors.white,
-                        blurRadius: 5,
-                        spreadRadius: 0.01)],
-                            
-                    ),
+          color: Colors.purple.shade50,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: const [
+            BoxShadow(color: Colors.white, blurRadius: 5, spreadRadius: 0.01)
+          ],
+        ),
         padding: EdgeInsets.symmetric(
           horizontal: mini ? 10 : 0,
         ),

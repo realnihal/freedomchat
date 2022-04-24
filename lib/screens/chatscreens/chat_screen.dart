@@ -698,10 +698,10 @@ class _ChatScreenState extends State<ChatScreen> {
               PageTransition(
                 ctx: (context),
                 type: PageTransitionType.rightToLeft,
-                child: DialerScreen(receiver: widget.receiver)
-                // child: VideoCallScreen(
-                // roomID: geturl(widget.receiver.uid!, _currentUserId),
-                // ),
+                //child: DialerScreen(receiver: widget.receiver)
+                 child: VideoCallScreen(
+                 roomID: geturl(widget.receiver.uid!, _currentUserId),
+                 ),
               ),
             )
           },

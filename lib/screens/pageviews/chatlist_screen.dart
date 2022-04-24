@@ -71,10 +71,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
           },
         ),
         PopupMenuButton<MenuItem>(
-          color: Colors.purple.shade50,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
-          onSelected: (item) => onSelected(context,item),
-          itemBuilder: (context) => [
+            color: Colors.purple.shade50,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20))),
+            onSelected: (item) => onSelected(context, item),
+            itemBuilder: (context) => [
                   ...MenuItems.itemsFirst.map(buildItem).toList(),
                   PopupMenuDivider(),
                   ...MenuItems.itemsSecond.map(buildItem).toList(),
@@ -83,17 +84,17 @@ class _ChatListScreenState extends State<ChatListScreen> {
     );
   }
 
-  void onSelected(BuildContext context,MenuItem item){
-    switch(item){
+  void onSelected(BuildContext context, MenuItem item) {
+    switch (item) {
       case MenuItems.itemSettings:
-      //todo functionality
-      break;
+        //todo functionality
+        break;
       case MenuItems.itemShare:
-      //todo functionality
-      break;
+        //todo functionality
+        break;
       case MenuItems.itemSignOut:
-      //todo functionality
-      break;
+        //todo functionality
+        break;
     }
   }
 
@@ -101,8 +102,14 @@ class _ChatListScreenState extends State<ChatListScreen> {
         value: item,
         child: Row(
           children: [
-            Icon(item.icon,color: Colors.purple.shade900,size: 20,),
-            const SizedBox(width: 12,),
+            Icon(
+              item.icon,
+              color: Colors.purple.shade900,
+              size: 20,
+            ),
+            const SizedBox(
+              width: 12,
+            ),
             Text(item.text),
           ],
         ),

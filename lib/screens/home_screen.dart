@@ -9,7 +9,7 @@ import 'package:freedomchat/resources/firebase_methods.dart';
 import 'package:freedomchat/resources/firebase_repository.dart';
 import 'package:freedomchat/screens/pageviews/calllist_screen.dart';
 import 'package:freedomchat/screens/pageviews/chatlist_screen.dart';
-import 'package:freedomchat/screens/pageviews/contact_list_screen.dart';
+import 'package:freedomchat/screens/pageviews/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -19,8 +19,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
-  PageController pageController = PageController();
-  int _page = 0;
+  PageController pageController = PageController(initialPage: 1);
+  int _page = 1;
   final FirebaseRepository _repository = FirebaseRepository();
   final FirebaseMethods _methods = FirebaseMethods();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -102,12 +102,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.purple.shade50,
+      backgroundColor:
+          (_page == 2) ? Colors.purple.shade100 : Colors.purple.shade50,
       body: PageView(
         children: [
           const ChatListScreen(),
           const Call_List_Screen(),
-          const Contact_List_Screen(),
+          const Profile_Screen(),
         ],
         controller: pageController,
         onPageChanged: onPageChanged,
@@ -123,16 +124,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             items: [
               Icon(Icons.chat, size: 30, color: Colors.purple[200]),
               Icon(Icons.call, size: 30, color: Colors.purple[200]),
-              Icon(Icons.contact_phone, size: 30, color: Colors.purple[200]),
+              Icon(Icons.person_rounded, size: 30, color: Colors.purple[200]),
             ],
             onTap: (_page) => setState(() {
               onPageChanged(_page);
-              pageController.animateToPage(_page,
-                duration: const Duration(milliseconds: 400),
-                curve: Curves.ease,);
+              pageController.animateToPage(
+                _page,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.ease,
+              );
             }),
-          )
-          ),
+          )),
     );
   }
 }
